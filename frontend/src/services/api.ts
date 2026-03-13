@@ -1,3 +1,5 @@
+import { getAccessToken } from '../auth/token';
+
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
 export class ApiError<TBody = unknown> extends Error {
@@ -13,8 +15,13 @@ export class ApiError<TBody = unknown> extends Error {
 }
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const token = getAccessToken();
   const res = await fetch(`${BASE_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options?.headers,
+    },
     ...options,
   });
 
@@ -50,6 +57,9 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
 // Types
 export interface ApiResponse<T> { success: boolean; data: T; message?: string | null; errors?: string[]; errorCode?: string | null; }
+export interface UserViewModel { id: number; email?: string | null; name?: string | null; phoneNumberE164?: string | null; }
+export interface AuthTokenResponse { accessToken: string; tokenType: string; expiresInSeconds: number; user: UserViewModel; }
+export interface OtpRequestResponse { sent: boolean; }
 export interface Book { id: number; title: string; description?: string; publicationYear: number; isbn?: string; coverImageUrl?: string; authorName: string; genreName: string; authorId: number; genreId: number; createdAt: string; }
 export interface BookSummary { id: number; title: string; coverImageUrl?: string; authorName: string; genreName: string; publicationYear: number; }
 export interface Author { id: number; name: string; biography?: string; nationality?: string; birthDate?: string; bookCount: number; createdAt: string; }
@@ -83,6 +93,26 @@ export interface ImportRemoteBookDto {
   source?: string;
   sourceId?: string;
 }
+
+// Auth
+export const authApi = {
+  requestOtp: (destinationNumber: string) =>
+    request<ApiResponse<OtpRequestResponse>>('/auth/otp/request', {
+      method: 'POST',
+      body: JSON.stringify({ destinationNumber }),
+    }),
+  verifyOtp: (destinationNumber: string, code: string) =>
+    request<ApiResponse<AuthTokenResponse>>('/auth/otp/verify', {
+      method: 'POST',
+      body: JSON.stringify({ destinationNumber, code }),
+    }),
+  google: (credential: string) =>
+    request<ApiResponse<AuthTokenResponse>>('/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ credential }),
+    }),
+  me: () => request<ApiResponse<UserViewModel>>('/auth/me'),
+};
 
 // Books
 export const booksApi = {

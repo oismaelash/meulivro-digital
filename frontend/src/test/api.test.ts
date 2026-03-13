@@ -44,7 +44,12 @@ describe('API Services', () => {
   });
 
   it('handles HTTP errors gracefully', async () => {
-    mockFetch.mockResolvedValueOnce({ ok: false, status: 404 });
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 404,
+      headers: { get: () => '' },
+      text: async () => '',
+    });
 
     const { booksApi } = await import('../services/api');
     await expect(booksApi.getById(999)).rejects.toThrow('HTTP 404');

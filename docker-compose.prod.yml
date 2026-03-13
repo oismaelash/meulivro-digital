@@ -25,6 +25,9 @@ services:
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=45432;Database=bookwise;Username=postgres;Password=postgres
       - DeepSeek__ApiKey=${DEEPSEEK_API_KEY}
       - Anthropic__ApiKey=${ANTHROPIC_API_KEY}
+      - PilotStatus__ApiKey=${PILOT_STATUS_API_KEY}
+      - PilotStatus__TemplateId=${PILOT_STATUS_TEMPLATE_ID}
+      - Auth__Google__ClientId=${GOOGLE_CLIENT_ID}
       - Cors__AllowedOrigins=http://localhost:4000
     ports:
       - "5000:8080"
@@ -38,6 +41,7 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_URL: /api/v1
+        VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID}
     ports:
       - "4000:80"
     depends_on:

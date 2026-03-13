@@ -5,7 +5,11 @@ using BookWise.Infrastructure.Data.Context;
 using BookWise.Infrastructure.Data.Seed;
 using BookWise.Infrastructure.Repositories;
 using System.Net.Http.Headers;
+using System.Text;
+using BookWise.API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +26,8 @@ builder.Services.AddDbContext<BookWiseDbContext>(options =>
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<IGenreRepository, GenreRepository>();
+builder.Services.AddScoped<IUserAccountRepository, UserAccountRepository>();
+builder.Services.AddScoped<ILoginOtpRepository, LoginOtpRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Application Services
@@ -47,8 +53,48 @@ builder.Services.AddHttpClient("Anthropic", client =>
 builder.Services.AddScoped<IAIService, AIService>();
 builder.Services.AddHttpClient<IRemoteBookSearchService, RemoteBookSearchService>();
 
+builder.Services.AddHttpClient("PilotStatus", (sp, client) =>
+{
+    var cfg = sp.GetRequiredService<IConfiguration>();
+    var baseUrl = cfg["PilotStatus:BaseUrl"] ?? cfg["Auth:PilotStatus:BaseUrl"] ?? "https://pilotstatus.online";
+    client.BaseAddress = new Uri(baseUrl);
+    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+});
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 // Controllers
 builder.Services.AddControllers();
+
+// Auth (JWT)
+var jwtSigningKey = string.IsNullOrWhiteSpace(builder.Configuration["Auth:Jwt:SigningKey"])
+    ? "dev_signing_key_change_me_dev_signing_key_change_me"
+    : builder.Configuration["Auth:Jwt:SigningKey"]!;
+var jwtIssuer = string.IsNullOrWhiteSpace(builder.Configuration["Auth:Jwt:Issuer"])
+    ? "BookWise"
+    : builder.Configuration["Auth:Jwt:Issuer"]!;
+var jwtAudience = string.IsNullOrWhiteSpace(builder.Configuration["Auth:Jwt:Audience"])
+    ? "BookWise"
+    : builder.Configuration["Auth:Jwt:Audience"]!;
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwtIssuer,
+            ValidateAudience = true,
+            ValidAudience = jwtAudience,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSigningKey)),
+            ClockSkew = TimeSpan.FromMinutes(2)
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 // CORS
 builder.Services.AddCors(options =>
@@ -74,6 +120,19 @@ builder.Services.AddSwaggerGen(c =>
     var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     if (File.Exists(xmlPath)) c.IncludeXmlComments(xmlPath);
+
+    var securityScheme = new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Description = "Bearer {token}",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+    };
+    c.AddSecurityDefinition("Bearer", securityScheme);
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement { { securityScheme, Array.Empty<string>() } });
 });
 
 var app = builder.Build();
@@ -114,6 +173,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

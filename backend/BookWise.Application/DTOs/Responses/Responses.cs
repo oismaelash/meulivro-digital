@@ -100,6 +100,24 @@ public record GenreTrendItem(
 
 public record ChatResponse(string Reply, string Model);
 
+public record UserViewModel(
+    int Id,
+    string? Email,
+    string? Name,
+    string? PhoneNumberE164
+);
+
+public record AuthTokenResponse(
+    string AccessToken,
+    string TokenType,
+    int ExpiresInSeconds,
+    UserViewModel User
+);
+
+public record OtpRequestResponse(
+    bool Sent
+);
+
 // Standard API response wrapper
 public record ApiResponse<T>(
     bool Success,

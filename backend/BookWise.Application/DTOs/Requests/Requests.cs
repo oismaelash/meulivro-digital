@@ -71,3 +71,16 @@ public record ChatRequest(
 );
 
 public record ChatMessageDto(string Role, string Content);
+
+public record RequestOtpRequest(
+    [Required][StringLength(20, MinimumLength = 8)] string DestinationNumber
+);
+
+public record VerifyOtpRequest(
+    [Required][StringLength(20, MinimumLength = 8)] string DestinationNumber,
+    [Required][StringLength(10, MinimumLength = 4)] string Code
+);
+
+public record GoogleLoginRequest(
+    [Required] string Credential
+);

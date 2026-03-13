@@ -1,5 +1,6 @@
 using BookWise.Application.DTOs.Requests;
 using BookWise.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookWise.API.Controllers.v1;
@@ -7,6 +8,7 @@ namespace BookWise.API.Controllers.v1;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Produces("application/json")]
+[Authorize]
 public class AuthorsController : ControllerBase
 {
     private readonly IAuthorService _authorService;
@@ -57,6 +59,7 @@ public class AuthorsController : ControllerBase
 [ApiController]
 [Route("api/v1/[controller]")]
 [Produces("application/json")]
+[Authorize]
 public class GenresController : ControllerBase
 {
     private readonly IGenreService _genreService;
@@ -107,6 +110,7 @@ public class GenresController : ControllerBase
 [ApiController]
 [Route("api/v1/[controller]")]
 [Produces("application/json")]
+[Authorize]
 public class AIController : ControllerBase
 {
     private readonly IAIService _aiService;

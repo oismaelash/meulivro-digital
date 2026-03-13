@@ -1,6 +1,6 @@
 # 📚 BookWise — Catálogo Inteligente de Livros
 
-> Sistema completo de gerenciamento de livros com **IA integrada** (Claude AI), construído com Clean Architecture, .NET 8, PostgreSQL e React.
+> Sistema completo de gerenciamento de livros com **IA integrada** (DeepSeek e Claude), construído com Clean Architecture, .NET 8, PostgreSQL e React.
 
 ---
 
@@ -14,10 +14,12 @@
 | Documentação interativa | Swagger / OpenAPI |
 | Frontend SPA | React 18 + TypeScript |
 | Gerenciamento de estado | Context API + useReducer |
-| **IA: Geração de sinopses** | Claude AI (Anthropic) |
-| **IA: Recomendações** | Claude AI (Anthropic) |
-| **IA: Chatbot de livros** | Claude AI (Anthropic) |
-| **IA: Análise de tendências** | Claude AI (Anthropic) |
+| **IA: Geração de sinopses** | DeepSeek ou Claude (Anthropic) |
+| **IA: Recomendações** | DeepSeek ou Claude (Anthropic) |
+| **IA: Chatbot de livros** | DeepSeek ou Claude (Anthropic) |
+| **IA: Análise de tendências** | DeepSeek ou Claude (Anthropic) |
+| Autenticação | JWT + OTP (WhatsApp) + Google OIDC |
+| Busca remota de livros | Google Books + Open Library |
 | Testes unitários (Backend) | xUnit + Moq |
 | Testes unitários (Frontend) | Vitest + Testing Library |
 | Containerização | Docker + Docker Compose |
@@ -50,11 +52,12 @@ bookwise/
 - **Soft Delete** — registros nunca são deletados fisicamente
 - **API Versionamento** — rotas em `/api/v1/`
 - **Respostas padronizadas** — `ApiResponse<T>` consistente com HTTP status codes
-- **Environments** — `appsettings.json`, `appsettings.Development.json`, `.env`
+- **Auto-migrations + seed** — aplica migrations no startup e faz seed idempotente de gêneros
+- **Environments** — `appsettings.json` + variáveis de ambiente (Docker/CI)
 
 ---
 
-## 🤖 Features de IA (Claude AI)
+## 🤖 Features de IA
 
 ### 1. Geração de Sinopse
 Gera automaticamente uma sinopse atraente para qualquer livro com base no título, autor e gênero.
@@ -88,7 +91,34 @@ POST /api/v1/ai/chat
 - [.NET 8 SDK](https://dotnet.microsoft.com/download)
 - [Node.js 20+](https://nodejs.org/)
 - [PostgreSQL 16](https://www.postgresql.org/) ou [Docker](https://www.docker.com/)
-- [Chave de API da Anthropic](https://console.anthropic.com/)
+- Chave(s) de IA (pelo menos uma): [Anthropic](https://console.anthropic.com/) e/ou [DeepSeek](https://platform.deepseek.com/)
+
+---
+
+### Variáveis de ambiente (Docker/produção)
+
+Crie um arquivo `.env` na raiz do repositório (usado pelo Docker Compose) com, no mínimo:
+
+```bash
+Auth__Jwt__SigningKey=uma_chave_longa_e_segura
+```
+
+E configure pelo menos um provider de IA:
+
+```bash
+ANTHROPIC_API_KEY=...
+# ou
+DEEPSEEK_API_KEY=...
+```
+
+Opcional (dependendo das features usadas):
+
+```bash
+GoogleBooks__ApiKey=...
+Auth__Google__ClientId=...
+PilotStatus__ApiKey=...
+PilotStatus__TemplateId=...
+```
 
 ---
 
@@ -99,37 +129,52 @@ POST /api/v1/ai/chat
 git clone https://github.com/seu-usuario/bookwise.git
 cd bookwise
 
-# 2. Configure a chave da Anthropic
-echo "ANTHROPIC_API_KEY=sk-ant-..." > .env
-
-# 3. Suba tudo
-docker-compose up --build
+# 2. Suba tudo
+docker compose up --build
 
 # Acesse:
 # Frontend: http://localhost:4000
 # API + Swagger: http://localhost:5000
+# Postgres: localhost:45432
 ```
 
 ---
 
-### Opção 2: Manual
+### Opção 2: Docker Compose (Dev com hot reload)
+
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
+
+---
+
+### Opção 3: Docker Compose (Prod)
+
+```bash
+docker compose -f docker-compose.prod.yml up --build
+```
+
+---
+
+### Opção 4: Manual
 
 #### Backend
 
 ```bash
 cd backend
 
-# Configure a connection string e API key
-# Edite BookWise.API/appsettings.Development.json:
-# "DefaultConnection": "Host=localhost;Database=bookwise;Username=postgres;Password=sua_senha"
-# "ApiKey": "sk-ant-sua_chave"
+# Configure via variáveis de ambiente (recomendado)
+# ConnectionStrings__DefaultConnection="Host=localhost;Port=45432;Database=bookwise;Username=postgres;Password=postgres"
+# Anthropic__ApiKey="..."
+# DeepSeek__ApiKey="..."
+# Auth__Jwt__SigningKey="uma_chave_longa_e_segura"
 
 # Restaure e execute
 dotnet restore
-dotnet ef database update --project BookWise.Infrastructure --startup-project BookWise.API
 dotnet run --project BookWise.API
 
-# Swagger disponível em: http://localhost:5000
+# O startup aplica migrations automaticamente e faz seed de gêneros
+# Swagger (somente em Development): http://localhost:5000 (pode redirecionar para https://localhost:5001)
 ```
 
 #### Frontend
@@ -142,7 +187,7 @@ echo "VITE_API_URL=http://localhost:5000/api/v1" > .env.development
 
 # Instale e execute
 npm install
-npm run dev
+npm run dev -- --port 4000
 
 # Acesse: http://localhost:4000
 ```
@@ -154,7 +199,7 @@ npm run dev
 ### Backend (xUnit)
 ```bash
 cd backend
-dotnet test --verbosity normal
+dotnet test BookWise.Tests/BookWise.Tests.csproj --verbosity normal
 ```
 
 ### Frontend (Vitest)
@@ -173,6 +218,8 @@ npm run test:coverage
 | GET | `/api/v1/books` | Listar todos os livros |
 | GET | `/api/v1/books/{id}` | Buscar livro por ID |
 | GET | `/api/v1/books/search?term=` | Pesquisar livros |
+| GET | `/api/v1/books/remote-search?term=&sources=google,openlibrary` | Buscar livros remotamente |
+| POST | `/api/v1/books/import` | Importar livro remoto (cria autor se necessário) |
 | POST | `/api/v1/books` | Criar livro |
 | PUT | `/api/v1/books/{id}` | Atualizar livro |
 | DELETE | `/api/v1/books/{id}` | Remover livro (soft delete) |
@@ -184,6 +231,10 @@ npm run test:coverage
 | POST | `/api/v1/genres` | Criar gênero |
 | PUT | `/api/v1/genres/{id}` | Atualizar gênero |
 | DELETE | `/api/v1/genres/{id}` | Remover gênero |
+| POST | `/api/v1/auth/otp/request` | Solicitar OTP (WhatsApp) |
+| POST | `/api/v1/auth/otp/verify` | Validar OTP e emitir JWT |
+| POST | `/api/v1/auth/google` | Login Google e emitir JWT |
+| GET | `/api/v1/auth/me` | Dados do usuário autenticado |
 | POST | `/api/v1/ai/synopsis` | Gerar sinopse com IA |
 | GET | `/api/v1/ai/recommendations/{id}` | Recomendações por IA |
 | GET | `/api/v1/ai/trends` | Análise de tendências |
@@ -199,8 +250,8 @@ Permite substituir qualquer camada (ex: trocar PostgreSQL por outro banco) sem i
 **Por que Unit of Work + Repository?**
 Centraliza o controle de transações e permite mockar o acesso a dados facilmente nos testes unitários, sem necessitar de banco real.
 
-**Por que Claude AI (Anthropic)?**
-A API da Anthropic oferece respostas contextuais de alta qualidade. O modelo `claude-sonnet-4-20250514` foi escolhido pelo equilíbrio ideal entre custo, velocidade e capacidade de raciocínio, especialmente para tarefas como geração de texto literário e análise semântica de catálogos.
+**Por que DeepSeek e Claude (Anthropic)?**
+O backend suporta múltiplos providers para equilibrar custo, latência e qualidade. A aplicação usa as chaves configuradas (`DeepSeek__ApiKey` e/ou `Anthropic__ApiKey`) e direciona as rotas de IA para o provider disponível.
 
 **Por que Context API + useReducer ao invés de Redux?**
 Para a escala deste projeto, Context + useReducer oferece gerenciamento de estado robusto sem a complexidade adicional do Redux. O padrão é familiar para desenvolvedores React e mantém o código mais conciso.

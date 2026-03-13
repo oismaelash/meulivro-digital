@@ -68,10 +68,24 @@ function ChatTab() {
           placeholder="Pergunte sobre livros, autores, recomendações..."
           value={input}
           onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && send()}
+          onKeyDown={e => {
+            if (e.key !== 'Enter') return;
+            if (e.ctrlKey || e.metaKey) {
+              e.preventDefault();
+              send();
+              return;
+            }
+            send();
+          }}
           disabled={loading}
         />
-        <button onClick={send} disabled={loading || !input.trim()} className="btn-primary px-4 disabled:opacity-50">
+        <button
+          onClick={send}
+          disabled={loading || !input.trim()}
+          className="btn-primary px-4 disabled:opacity-50"
+          title="Enviar (Enter · Ctrl/⌘+Enter)"
+          aria-label="Enviar (Enter · Ctrl/⌘+Enter)"
+        >
           <Send size={16} />
         </button>
       </div>

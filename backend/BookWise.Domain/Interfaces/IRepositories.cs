@@ -27,10 +27,23 @@ public interface IGenreRepository : IRepository<Genre>
     Task<Genre?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
 }
 
+public interface IUserAccountRepository : IRepository<UserAccount>
+{
+    Task<UserAccount?> GetByGoogleSubjectAsync(string googleSubject, CancellationToken cancellationToken = default);
+    Task<UserAccount?> GetByPhoneNumberAsync(string phoneNumberE164, CancellationToken cancellationToken = default);
+}
+
+public interface ILoginOtpRepository : IRepository<LoginOtp>
+{
+    Task<LoginOtp?> GetLatestActiveAsync(string phoneNumberE164, CancellationToken cancellationToken = default);
+}
+
 public interface IUnitOfWork
 {
     IBookRepository Books { get; }
     IAuthorRepository Authors { get; }
     IGenreRepository Genres { get; }
+    IUserAccountRepository Users { get; }
+    ILoginOtpRepository LoginOtps { get; }
     Task<int> CommitAsync(CancellationToken cancellationToken = default);
 }

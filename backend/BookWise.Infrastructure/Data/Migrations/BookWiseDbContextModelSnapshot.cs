@@ -115,6 +115,136 @@ public partial class BookWiseDbContextModelSnapshot : ModelSnapshot
             b.HasQueryFilter(g => g.IsActive);
         });
 
+        modelBuilder.Entity<UserAccount>(b =>
+        {
+            b.Property<int>("Id")
+                .ValueGeneratedOnAdd()
+                .HasColumnType("integer")
+                .HasColumnName("id");
+
+            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+            b.Property<DateTime>("CreatedAt")
+                .HasColumnType("timestamp with time zone")
+                .HasColumnName("created_at");
+
+            b.Property<string>("Email")
+                .HasMaxLength(320)
+                .HasColumnType("character varying(320)")
+                .HasColumnName("email");
+
+            b.Property<string>("GoogleSubject")
+                .HasMaxLength(128)
+                .HasColumnType("character varying(128)")
+                .HasColumnName("google_subject");
+
+            b.Property<bool>("IsActive")
+                .ValueGeneratedOnAdd()
+                .HasColumnType("boolean")
+                .HasColumnName("is_active")
+                .HasDefaultValue(true);
+
+            b.Property<DateTime?>("LastLoginAt")
+                .HasColumnType("timestamp with time zone")
+                .HasColumnName("last_login_at");
+
+            b.Property<string>("Name")
+                .HasMaxLength(200)
+                .HasColumnType("character varying(200)")
+                .HasColumnName("name");
+
+            b.Property<string>("PhoneNumberE164")
+                .HasMaxLength(20)
+                .HasColumnType("character varying(20)")
+                .HasColumnName("phone_number_e164");
+
+            b.Property<DateTime?>("UpdatedAt")
+                .HasColumnType("timestamp with time zone")
+                .HasColumnName("updated_at");
+
+            b.HasKey("Id");
+
+            b.HasIndex("Email")
+                .HasFilter("\"email\" IS NOT NULL");
+
+            b.HasIndex("GoogleSubject")
+                .IsUnique()
+                .HasFilter("\"google_subject\" IS NOT NULL");
+
+            b.HasIndex("PhoneNumberE164")
+                .IsUnique()
+                .HasFilter("\"phone_number_e164\" IS NOT NULL");
+
+            b.ToTable("users");
+
+            b.HasQueryFilter(u => u.IsActive);
+        });
+
+        modelBuilder.Entity<LoginOtp>(b =>
+        {
+            b.Property<int>("Id")
+                .ValueGeneratedOnAdd()
+                .HasColumnType("integer")
+                .HasColumnName("id");
+
+            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+            b.Property<int>("Attempts")
+                .ValueGeneratedOnAdd()
+                .HasColumnType("integer")
+                .HasColumnName("attempts")
+                .HasDefaultValue(0);
+
+            b.Property<string>("CodeHash")
+                .IsRequired()
+                .HasMaxLength(128)
+                .HasColumnType("character varying(128)")
+                .HasColumnName("code_hash");
+
+            b.Property<DateTime?>("ConsumedAt")
+                .HasColumnType("timestamp with time zone")
+                .HasColumnName("consumed_at");
+
+            b.Property<DateTime>("CreatedAt")
+                .HasColumnType("timestamp with time zone")
+                .HasColumnName("created_at");
+
+            b.Property<DateTime>("ExpiresAt")
+                .HasColumnType("timestamp with time zone")
+                .HasColumnName("expires_at");
+
+            b.Property<bool>("IsActive")
+                .ValueGeneratedOnAdd()
+                .HasColumnType("boolean")
+                .HasColumnName("is_active")
+                .HasDefaultValue(true);
+
+            b.Property<string>("PhoneNumberE164")
+                .IsRequired()
+                .HasMaxLength(20)
+                .HasColumnType("character varying(20)")
+                .HasColumnName("phone_number_e164");
+
+            b.Property<string>("PilotMessageId")
+                .HasMaxLength(64)
+                .HasColumnType("character varying(64)")
+                .HasColumnName("pilot_message_id");
+
+            b.Property<DateTime?>("UpdatedAt")
+                .HasColumnType("timestamp with time zone")
+                .HasColumnName("updated_at");
+
+            b.HasKey("Id");
+
+            b.HasIndex("ExpiresAt");
+
+            b.HasIndex("PhoneNumberE164");
+
+            b.ToTable("login_otps");
+
+            b.HasQueryFilter(o => o.IsActive);
+        });
+
         modelBuilder.Entity<Book>(b =>
         {
             b.Property<int>("Id")

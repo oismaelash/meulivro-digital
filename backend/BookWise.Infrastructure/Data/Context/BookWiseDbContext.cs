@@ -11,6 +11,8 @@ public class BookWiseDbContext : DbContext
     public DbSet<Book> Books => Set<Book>();
     public DbSet<Author> Authors => Set<Author>();
     public DbSet<Genre> Genres => Set<Genre>();
+    public DbSet<UserAccount> Users => Set<UserAccount>();
+    public DbSet<LoginOtp> LoginOtps => Set<LoginOtp>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

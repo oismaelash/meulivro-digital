@@ -1,22 +1,25 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, NavLink, useLocation, Outlet } from 'react-router-dom';
 import { BookProvider } from './store/BookContext';
 import { Toaster } from 'react-hot-toast';
 import { BookOpen, Users, Tag, Sparkles, LayoutDashboard, Menu, X } from 'lucide-react';
 import './index.css';
+import { AuthProvider } from './auth/AuthContext';
+import { RequireAuth } from './auth/RequireAuth';
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const BooksPage = lazy(() => import('./pages/BooksPage'));
 const AuthorsPage = lazy(() => import('./pages/AuthorsPage'));
 const GenresPage = lazy(() => import('./pages/GenresPage'));
 const AIPage = lazy(() => import('./pages/AIPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, exact: true },
   { to: '/books', label: 'Livros', icon: BookOpen },
   { to: '/authors', label: 'Autores', icon: Users },
   { to: '/genres', label: 'Gêneros', icon: Tag },
-  { to: '/ai', label: 'IA Features', icon: Sparkles },
+  { to: '/ai', label: 'I.A', icon: Sparkles },
 ];
 
 function Sidebar() {
@@ -73,7 +76,7 @@ function Sidebar() {
         <div className="absolute bottom-6 left-4 right-4">
           <div className="bg-amber-900/20 border border-amber-900/40 rounded-xl p-4">
             <p className="text-xs text-amber-500 font-medium mb-1">✨ AI Powered</p>
-            <p className="text-xs text-amber-600/60">Recomendações, sinopses e análises com Claude AI</p>
+            <p className="text-xs text-amber-600/60">Recomendações, sinopses e análises com I.A</p>
           </div>
         </div>
       </aside>
@@ -93,31 +96,51 @@ function LoadingSpinner() {
   );
 }
 
+function AppShell() {
+  return (
+    <div className="flex min-h-screen bg-stone-950">
+      <Sidebar />
+      <main className="flex-1 md:ml-64 p-6 md:p-8">
+        <Suspense fallback={<LoadingSpinner />}>
+          <Outlet />
+        </Suspense>
+      </main>
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
-      <BookProvider>
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            style: { background: '#1c1917', color: '#fde68a', border: '1px solid #78350f' },
-          }}
-        />
-        <div className="flex min-h-screen bg-stone-950">
-          <Sidebar />
-          <main className="flex-1 md:ml-64 p-6 md:p-8">
-            <Suspense fallback={<LoadingSpinner />}>
-              <Routes>
+      <AuthProvider>
+        <BookProvider>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              style: { background: '#1c1917', color: '#fde68a', border: '1px solid #78350f' },
+            }}
+          />
+          <Routes>
+            <Route
+              path="/login"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <LoginPage />
+                </Suspense>
+              }
+            />
+            <Route element={<RequireAuth />}>
+              <Route element={<AppShell />}>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/books/*" element={<BooksPage />} />
                 <Route path="/authors/*" element={<AuthorsPage />} />
                 <Route path="/genres/*" element={<GenresPage />} />
                 <Route path="/ai" element={<AIPage />} />
-              </Routes>
-            </Suspense>
-          </main>
-        </div>
-      </BookProvider>
+              </Route>
+            </Route>
+          </Routes>
+        </BookProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

@@ -1,5 +1,6 @@
 using BookWise.Application.DTOs.Requests;
 using BookWise.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookWise.API.Controllers.v1;
@@ -7,6 +8,7 @@ namespace BookWise.API.Controllers.v1;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Produces("application/json")]
+[Authorize]
 public class BooksController : ControllerBase
 {
     private readonly IBookService _bookService;

@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Plus, Pencil, Trash2, Users, Tag, X, BookOpen } from 'lucide-react';
 import { useBookStore } from '../store/BookContext';
 import { authorsApi, genresApi, CreateAuthorDto, CreateGenreDto } from '../services/api';
+import { ConfirmDialog } from '../components/ConfirmDialog';
+import { useDialogHotkeys } from '../hooks/useDialogHotkeys';
 import toast from 'react-hot-toast';
 
 const getErrorMessage = (err: unknown, fallback: string) =>
@@ -9,18 +11,33 @@ const getErrorMessage = (err: unknown, fallback: string) =>
 
 // ===== AUTHORS =====
 function AuthorModal({ author, onClose, onSave }: any) {
+  const formRef = useRef<HTMLFormElement>(null);
   const [form, setForm] = useState<CreateAuthorDto>(author || { name: '', biography: '', nationality: '', birthDate: '' });
 
   const handleSubmit = async (e: React.FormEvent) => { e.preventDefault(); await onSave(form); };
+
+  useDialogHotkeys({
+    open: true,
+    onCancel: onClose,
+    onConfirm: () => formRef.current?.requestSubmit(),
+  });
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
       <div className="bg-stone-900 border border-stone-700 rounded-2xl w-full max-w-md">
         <div className="flex items-center justify-between p-6 border-b border-stone-800">
           <h3 className="font-serif text-lg font-semibold text-amber-100">{author ? 'Editar Autor' : 'Novo Autor'}</h3>
-          <button onClick={onClose} className="text-stone-400 hover:text-amber-100"><X size={20} /></button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-stone-400 hover:text-amber-100"
+            title="Fechar (Esc)"
+            aria-label="Fechar (Esc)"
+          >
+            <X size={20} />
+          </button>
         </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label className="text-xs text-stone-400 mb-1 block">Nome *</label>
             <input className="input-field" required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
@@ -40,8 +57,8 @@ function AuthorModal({ author, onClose, onSave }: any) {
             <textarea className="input-field min-h-[80px] resize-none" value={form.biography || ''} onChange={e => setForm(f => ({ ...f, biography: e.target.value }))} />
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 btn-secondary">Cancelar</button>
-            <button type="submit" className="flex-1 btn-primary">Salvar</button>
+            <button type="button" onClick={onClose} className="flex-1 btn-secondary">Cancelar (Esc)</button>
+            <button type="submit" className="flex-1 btn-primary">Salvar (Enter · Ctrl/⌘+Enter)</button>
           </div>
         </form>
       </div>
@@ -52,6 +69,8 @@ function AuthorModal({ author, onClose, onSave }: any) {
 export function AuthorsPage() {
   const { state, fetchAuthors, dispatch } = useBookStore();
   const [modal, setModal] = useState<{ open: boolean; author?: any }>({ open: false });
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id?: number }>({ open: false });
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => { fetchAuthors(); }, [fetchAuthors]);
 
@@ -70,12 +89,21 @@ export function AuthorsPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Excluir este autor?')) return;
+    setDeleteDialog({ open: true, id });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteDialog.id || deleting) return;
+    setDeleting(true);
     try {
-      const res = await authorsApi.delete(id);
-      if (res.success) { dispatch({ type: 'DELETE_AUTHOR', payload: id }); toast.success('Autor excluído!'); }
-      else toast.error(res.message || 'Erro ao excluir');
+      const res = await authorsApi.delete(deleteDialog.id);
+      if (res.success) {
+        dispatch({ type: 'DELETE_AUTHOR', payload: deleteDialog.id });
+        toast.success('Autor excluído!');
+        setDeleteDialog({ open: false });
+      } else toast.error(res.message || 'Erro ao excluir');
     } catch (err) { toast.error(getErrorMessage(err, 'Erro ao excluir')); }
+    finally { setDeleting(false); }
   };
 
   return (
@@ -123,24 +151,49 @@ export function AuthorsPage() {
       </div>
 
       {modal.open && <AuthorModal author={modal.author} onClose={() => setModal({ open: false })} onSave={handleSave} />}
+      <ConfirmDialog
+        open={deleteDialog.open}
+        title="Excluir autor?"
+        description="Essa ação não pode ser desfeita."
+        confirmText="Excluir (Enter · Ctrl/⌘+Enter)"
+        cancelText="Cancelar (Esc)"
+        confirmDisabled={deleting}
+        onCancel={() => setDeleteDialog({ open: false })}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }
 
 // ===== GENRES =====
 function GenreModal({ genre, onClose, onSave }: any) {
+  const formRef = useRef<HTMLFormElement>(null);
   const [form, setForm] = useState<CreateGenreDto>(genre || { name: '', description: '' });
 
   const handleSubmit = async (e: React.FormEvent) => { e.preventDefault(); await onSave(form); };
+
+  useDialogHotkeys({
+    open: true,
+    onCancel: onClose,
+    onConfirm: () => formRef.current?.requestSubmit(),
+  });
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
       <div className="bg-stone-900 border border-stone-700 rounded-2xl w-full max-w-sm">
         <div className="flex items-center justify-between p-6 border-b border-stone-800">
           <h3 className="font-serif text-lg font-semibold text-amber-100">{genre ? 'Editar Gênero' : 'Novo Gênero'}</h3>
-          <button onClick={onClose} className="text-stone-400 hover:text-amber-100"><X size={20} /></button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-stone-400 hover:text-amber-100"
+            title="Fechar (Esc)"
+            aria-label="Fechar (Esc)"
+          >
+            <X size={20} />
+          </button>
         </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label className="text-xs text-stone-400 mb-1 block">Nome *</label>
             <input className="input-field" required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
@@ -150,8 +203,8 @@ function GenreModal({ genre, onClose, onSave }: any) {
             <textarea className="input-field resize-none" value={form.description || ''} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 btn-secondary">Cancelar</button>
-            <button type="submit" className="flex-1 btn-primary">Salvar</button>
+            <button type="button" onClick={onClose} className="flex-1 btn-secondary">Cancelar (Esc)</button>
+            <button type="submit" className="flex-1 btn-primary">Salvar (Enter · Ctrl/⌘+Enter)</button>
           </div>
         </form>
       </div>
@@ -162,6 +215,8 @@ function GenreModal({ genre, onClose, onSave }: any) {
 export function GenresPage() {
   const { state, fetchGenres, dispatch } = useBookStore();
   const [modal, setModal] = useState<{ open: boolean; genre?: any }>({ open: false });
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id?: number }>({ open: false });
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => { fetchGenres(); }, [fetchGenres]);
 
@@ -180,12 +235,21 @@ export function GenresPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Excluir este gênero?')) return;
+    setDeleteDialog({ open: true, id });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteDialog.id || deleting) return;
+    setDeleting(true);
     try {
-      const res = await genresApi.delete(id);
-      if (res.success) { dispatch({ type: 'DELETE_GENRE', payload: id }); toast.success('Gênero excluído!'); }
-      else toast.error(res.message || 'Erro ao excluir');
+      const res = await genresApi.delete(deleteDialog.id);
+      if (res.success) {
+        dispatch({ type: 'DELETE_GENRE', payload: deleteDialog.id });
+        toast.success('Gênero excluído!');
+        setDeleteDialog({ open: false });
+      } else toast.error(res.message || 'Erro ao excluir');
     } catch (err) { toast.error(getErrorMessage(err, 'Erro ao excluir')); }
+    finally { setDeleting(false); }
   };
 
   const colors = ['bg-emerald-900/30 text-emerald-400', 'bg-violet-900/30 text-violet-400', 'bg-rose-900/30 text-rose-400', 'bg-cyan-900/30 text-cyan-400', 'bg-orange-900/30 text-orange-400'];
@@ -232,6 +296,16 @@ export function GenresPage() {
       </div>
 
       {modal.open && <GenreModal genre={modal.genre} onClose={() => setModal({ open: false })} onSave={handleSave} />}
+      <ConfirmDialog
+        open={deleteDialog.open}
+        title="Excluir gênero?"
+        description="Essa ação não pode ser desfeita."
+        confirmText="Excluir (Enter · Ctrl/⌘+Enter)"
+        cancelText="Cancelar (Esc)"
+        confirmDisabled={deleting}
+        onCancel={() => setDeleteDialog({ open: false })}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }

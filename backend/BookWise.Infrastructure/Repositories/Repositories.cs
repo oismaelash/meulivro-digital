@@ -121,20 +121,46 @@ public class GenreRepository : BaseRepository<Genre>, IGenreRepository
         await _context.Genres.FirstOrDefaultAsync(g => g.Name.ToLower() == name.ToLower(), ct);
 }
 
+public class UserAccountRepository : BaseRepository<UserAccount>, IUserAccountRepository
+{
+    public UserAccountRepository(BookWiseDbContext context) : base(context) { }
+
+    public async Task<UserAccount?> GetByGoogleSubjectAsync(string googleSubject, CancellationToken ct = default) =>
+        await _context.Users.FirstOrDefaultAsync(u => u.GoogleSubject == googleSubject, ct);
+
+    public async Task<UserAccount?> GetByPhoneNumberAsync(string phoneNumberE164, CancellationToken ct = default) =>
+        await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumberE164 == phoneNumberE164, ct);
+}
+
+public class LoginOtpRepository : BaseRepository<LoginOtp>, ILoginOtpRepository
+{
+    public LoginOtpRepository(BookWiseDbContext context) : base(context) { }
+
+    public async Task<LoginOtp?> GetLatestActiveAsync(string phoneNumberE164, CancellationToken ct = default) =>
+        await _context.LoginOtps
+            .Where(o => o.PhoneNumberE164 == phoneNumberE164)
+            .OrderByDescending(o => o.CreatedAt)
+            .FirstOrDefaultAsync(ct);
+}
+
 public class UnitOfWork : IUnitOfWork
 {
     private readonly BookWiseDbContext _context;
     public IBookRepository Books { get; }
     public IAuthorRepository Authors { get; }
     public IGenreRepository Genres { get; }
+    public IUserAccountRepository Users { get; }
+    public ILoginOtpRepository LoginOtps { get; }
 
     public UnitOfWork(BookWiseDbContext context, IBookRepository books,
-        IAuthorRepository authors, IGenreRepository genres)
+        IAuthorRepository authors, IGenreRepository genres, IUserAccountRepository users, ILoginOtpRepository loginOtps)
     {
         _context = context;
         Books = books;
         Authors = authors;
         Genres = genres;
+        Users = users;
+        LoginOtps = loginOtps;
     }
 
     public async Task<int> CommitAsync(CancellationToken ct = default) =>

@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Plus, Search, Pencil, Trash2, BookOpen, Sparkles, X, ChevronDown } from 'lucide-react';
 import { useBookStore } from '../store/BookContext';
 import { aiApi, booksApi, CreateBookDto, Genre, ImportRemoteBookDto, RemoteBookResult } from '../services/api';
+import { ConfirmDialog } from '../components/ConfirmDialog';
+import { useDialogHotkeys } from '../hooks/useDialogHotkeys';
 import toast from 'react-hot-toast';
 
 function GenreCombobox({
@@ -95,11 +97,18 @@ function GenreCombobox({
 
 function BookModal({ book, onClose, onSave }: any) {
   const { state } = useBookStore();
+  const formRef = useRef<HTMLFormElement>(null);
   const [form, setForm] = useState<CreateBookDto>(book || {
     title: '', description: '', publicationYear: new Date().getFullYear(),
     isbn: '', authorId: 0, genreId: 0, coverImageUrl: ''
   });
   const [generating, setGenerating] = useState(false);
+
+  useDialogHotkeys({
+    open: true,
+    onCancel: onClose,
+    onConfirm: () => formRef.current?.requestSubmit(),
+  });
 
   const handleGenerateSynopsis = async () => {
     if (!form.title || !form.authorId || !form.genreId) {
@@ -130,9 +139,17 @@ function BookModal({ book, onClose, onSave }: any) {
       <div className="bg-stone-900 border border-stone-700 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-stone-800">
           <h3 className="font-serif text-lg font-semibold text-amber-100">{book ? 'Editar Livro' : 'Novo Livro'}</h3>
-          <button onClick={onClose} className="text-stone-400 hover:text-amber-100"><X size={20} /></button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-stone-400 hover:text-amber-100"
+            title="Fechar (Esc)"
+            aria-label="Fechar (Esc)"
+          >
+            <X size={20} />
+          </button>
         </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label className="text-xs text-stone-400 mb-1 block">Título *</label>
             <input className="input-field" required value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} />
@@ -176,8 +193,8 @@ function BookModal({ book, onClose, onSave }: any) {
               onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 btn-secondary">Cancelar</button>
-            <button type="submit" className="flex-1 btn-primary">Salvar</button>
+            <button type="button" onClick={onClose} className="flex-1 btn-secondary">Cancelar (Esc)</button>
+            <button type="submit" className="flex-1 btn-primary">Salvar (Enter · Ctrl/⌘+Enter)</button>
           </div>
         </form>
       </div>
@@ -187,6 +204,7 @@ function BookModal({ book, onClose, onSave }: any) {
 
 function ImportBookModal({ seed, onClose, onSave }: any) {
   const { state } = useBookStore();
+  const formRef = useRef<HTMLFormElement>(null);
   const [form, setForm] = useState<ImportRemoteBookDto>({
     title: seed?.title || '',
     description: seed?.description || '',
@@ -199,6 +217,12 @@ function ImportBookModal({ seed, onClose, onSave }: any) {
     sourceId: seed?.sourceId,
   });
   const [generating, setGenerating] = useState(false);
+
+  useDialogHotkeys({
+    open: true,
+    onCancel: onClose,
+    onConfirm: () => formRef.current?.requestSubmit(),
+  });
 
   const handleGenerateSynopsis = async () => {
     if (!form.title || !form.authorName || !form.genreId) {
@@ -229,9 +253,17 @@ function ImportBookModal({ seed, onClose, onSave }: any) {
       <div className="bg-stone-900 border border-stone-700 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-stone-800">
           <h3 className="font-serif text-lg font-semibold text-amber-100">Importar Livro</h3>
-          <button onClick={onClose} className="text-stone-400 hover:text-amber-100"><X size={20} /></button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-stone-400 hover:text-amber-100"
+            title="Fechar (Esc)"
+            aria-label="Fechar (Esc)"
+          >
+            <X size={20} />
+          </button>
         </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label className="text-xs text-stone-400 mb-1 block">Título *</label>
             <input className="input-field" required value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} />
@@ -272,8 +304,8 @@ function ImportBookModal({ seed, onClose, onSave }: any) {
               onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 btn-secondary">Cancelar</button>
-            <button type="submit" className="flex-1 btn-primary">Adicionar</button>
+            <button type="button" onClick={onClose} className="flex-1 btn-secondary">Cancelar (Esc)</button>
+            <button type="submit" className="flex-1 btn-primary">Adicionar (Enter · Ctrl/⌘+Enter)</button>
           </div>
         </form>
       </div>
@@ -287,6 +319,8 @@ export default function BooksPage() {
   const [modal, setModal] = useState<{ open: boolean; book?: any }>({ open: false });
   const [remote, setRemote] = useState<{ loading: boolean; results: RemoteBookResult[] }>({ loading: false, results: [] });
   const [importModal, setImportModal] = useState<{ open: boolean; seed?: RemoteBookResult }>({ open: false });
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id?: number }>({ open: false });
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => { fetchBooks(); fetchAuthors(); fetchGenres(); }, [fetchBooks, fetchAuthors, fetchGenres]);
 
@@ -310,11 +344,23 @@ export default function BooksPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Excluir este livro?')) return;
+    setDeleteDialog({ open: true, id });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteDialog.id || deleting) return;
+    setDeleting(true);
     try {
-      const res = await booksApi.delete(id);
-      if (res.success) { dispatch({ type: 'DELETE_BOOK', payload: id }); toast.success('Livro excluído!'); }
+      const res = await booksApi.delete(deleteDialog.id);
+      if (res.success) {
+        dispatch({ type: 'DELETE_BOOK', payload: deleteDialog.id });
+        toast.success('Livro excluído!');
+        setDeleteDialog({ open: false });
+      } else {
+        toast.error(res.message || 'Erro ao excluir');
+      }
     } catch { toast.error('Erro ao excluir'); }
+    finally { setDeleting(false); }
   };
 
   const handleRemoteSearch = async () => {
@@ -445,6 +491,16 @@ export default function BooksPage() {
 
       {modal.open && <BookModal book={modal.book} onClose={() => setModal({ open: false })} onSave={handleSave} />}
       {importModal.open && <ImportBookModal seed={importModal.seed} onClose={() => setImportModal({ open: false })} onSave={handleImportSave} />}
+      <ConfirmDialog
+        open={deleteDialog.open}
+        title="Excluir livro?"
+        description="Essa ação não pode ser desfeita."
+        confirmText="Excluir (Enter · Ctrl/⌘+Enter)"
+        cancelText="Cancelar (Esc)"
+        confirmDisabled={deleting}
+        onCancel={() => setDeleteDialog({ open: false })}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }

@@ -75,3 +75,49 @@ public class GenreConfiguration : IEntityTypeConfiguration<Genre>
         builder.HasQueryFilter(g => g.IsActive);
     }
 }
+
+public class UserAccountConfiguration : IEntityTypeConfiguration<UserAccount>
+{
+    public void Configure(EntityTypeBuilder<UserAccount> builder)
+    {
+        builder.ToTable("users");
+        builder.HasKey(u => u.Id);
+        builder.Property(u => u.Id).HasColumnName("id").UseIdentityColumn();
+        builder.Property(u => u.Email).HasColumnName("email").HasMaxLength(320);
+        builder.Property(u => u.Name).HasColumnName("name").HasMaxLength(200);
+        builder.Property(u => u.GoogleSubject).HasColumnName("google_subject").HasMaxLength(128);
+        builder.Property(u => u.PhoneNumberE164).HasColumnName("phone_number_e164").HasMaxLength(20);
+        builder.Property(u => u.LastLoginAt).HasColumnName("last_login_at");
+        builder.Property(u => u.CreatedAt).HasColumnName("created_at");
+        builder.Property(u => u.UpdatedAt).HasColumnName("updated_at");
+        builder.Property(u => u.IsActive).HasColumnName("is_active").HasDefaultValue(true);
+
+        builder.HasIndex(u => u.GoogleSubject).IsUnique().HasFilter("google_subject IS NOT NULL");
+        builder.HasIndex(u => u.PhoneNumberE164).IsUnique().HasFilter("phone_number_e164 IS NOT NULL");
+        builder.HasIndex(u => u.Email).HasFilter("email IS NOT NULL");
+        builder.HasQueryFilter(u => u.IsActive);
+    }
+}
+
+public class LoginOtpConfiguration : IEntityTypeConfiguration<LoginOtp>
+{
+    public void Configure(EntityTypeBuilder<LoginOtp> builder)
+    {
+        builder.ToTable("login_otps");
+        builder.HasKey(o => o.Id);
+        builder.Property(o => o.Id).HasColumnName("id").UseIdentityColumn();
+        builder.Property(o => o.PhoneNumberE164).HasColumnName("phone_number_e164").IsRequired().HasMaxLength(20);
+        builder.Property(o => o.CodeHash).HasColumnName("code_hash").IsRequired().HasMaxLength(128);
+        builder.Property(o => o.ExpiresAt).HasColumnName("expires_at").IsRequired();
+        builder.Property(o => o.ConsumedAt).HasColumnName("consumed_at");
+        builder.Property(o => o.Attempts).HasColumnName("attempts").HasDefaultValue(0);
+        builder.Property(o => o.PilotMessageId).HasColumnName("pilot_message_id").HasMaxLength(64);
+        builder.Property(o => o.CreatedAt).HasColumnName("created_at");
+        builder.Property(o => o.UpdatedAt).HasColumnName("updated_at");
+        builder.Property(o => o.IsActive).HasColumnName("is_active").HasDefaultValue(true);
+
+        builder.HasIndex(o => o.PhoneNumberE164);
+        builder.HasIndex(o => o.ExpiresAt);
+        builder.HasQueryFilter(o => o.IsActive);
+    }
+}
