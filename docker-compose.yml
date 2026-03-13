@@ -1,0 +1,50 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bookwise_db
+    environment:
+      POSTGRES_DB: bookwise
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bookwise_api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=bookwise;Username=postgres;Password=postgres
+      - Anthropic__ApiKey=${ANTHROPIC_API_KEY}
+      - Cors__AllowedOrigins=http://localhost:3000
+    ports:
+      - "5000:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bookwise_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    environment:
+      - VITE_API_URL=http://localhost:5000/api/v1
+
+volumes:
+  postgres_data:
