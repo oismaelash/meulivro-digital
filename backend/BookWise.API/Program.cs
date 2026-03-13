@@ -55,7 +55,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
         policy.WithOrigins(
-            builder.Configuration["Cors:AllowedOrigins"]?.Split(",") ?? ["http://localhost:6000"])
+            builder.Configuration["Cors:AllowedOrigins"]?.Split(",") ?? ["http://localhost:4000"])
             .AllowAnyHeader()
             .AllowAnyMethod());
 });

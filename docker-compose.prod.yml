@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "75432:5432"
+      - "45432:5432"
     volumes:
       - postgres_data_prod:/var/lib/postgresql/data
     healthcheck:
@@ -24,7 +24,7 @@ services:
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=bookwise;Username=postgres;Password=postgres
       - DeepSeek__ApiKey=${DEEPSEEK_API_KEY}
       - Anthropic__ApiKey=${ANTHROPIC_API_KEY}
-      - Cors__AllowedOrigins=http://localhost:6000
+      - Cors__AllowedOrigins=http://localhost:4000
     ports:
       - "5000:8080"
     depends_on:
@@ -38,7 +38,7 @@ services:
       args:
         VITE_API_URL: /api/v1
     ports:
-      - "6000:80"
+      - "4000:80"
     depends_on:
       - api
 
