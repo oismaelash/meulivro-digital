@@ -1,8 +1,97 @@
-import { useEffect, useState } from 'react';
-import { Plus, Search, Pencil, Trash2, BookOpen, Sparkles, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Plus, Search, Pencil, Trash2, BookOpen, Sparkles, X, ChevronDown } from 'lucide-react';
 import { useBookStore } from '../store/BookContext';
-import { booksApi, aiApi, CreateBookDto, ImportRemoteBookDto, RemoteBookResult } from '../services/api';
+import { aiApi, booksApi, CreateBookDto, Genre, ImportRemoteBookDto, RemoteBookResult } from '../services/api';
 import toast from 'react-hot-toast';
+
+function GenreCombobox({
+  genres,
+  value,
+  onChange,
+}: {
+  genres: Genre[];
+  value: number;
+  onChange: (id: number) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const closeTimer = useRef<number | null>(null);
+
+  const selected = useMemo(() => genres.find(g => g.id === value) || null, [genres, value]);
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return genres;
+    return genres.filter(g => g.name.toLowerCase().includes(q));
+  }, [genres, query]);
+
+  const displayValue = open ? query : (selected?.name || '');
+
+  const handleBlur = () => {
+    closeTimer.current = window.setTimeout(() => setOpen(false), 120);
+  };
+
+  const handleFocus = () => {
+    if (closeTimer.current) window.clearTimeout(closeTimer.current);
+    setOpen(true);
+    setQuery('');
+  };
+
+  const handleSelect = (g: Genre) => {
+    onChange(g.id);
+    setOpen(false);
+    setQuery('');
+  };
+
+  return (
+    <div className="relative">
+      <div className="relative">
+        <input
+          className="input-field pr-10"
+          placeholder={selected?.name ? '' : 'Buscar gênero...'}
+          value={displayValue}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onChange={e => {
+            setOpen(true);
+            setQuery(e.target.value);
+          }}
+        />
+        <button
+          type="button"
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-stone-500 hover:text-amber-100"
+          onMouseDown={e => e.preventDefault()}
+          onClick={() => setOpen(o => !o)}
+        >
+          <ChevronDown size={16} />
+        </button>
+      </div>
+
+      {open && (
+        <div className="absolute left-0 right-0 mt-2 z-50 bg-stone-900 border border-stone-700 rounded-xl overflow-hidden shadow-xl">
+          <div className="max-h-60 overflow-auto">
+            {filtered.length === 0 ? (
+              <div className="px-3 py-2 text-sm text-stone-400">Nenhum gênero encontrado</div>
+            ) : (
+              filtered.map(g => (
+                <button
+                  key={g.id}
+                  type="button"
+                  className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+                    g.id === value ? 'bg-stone-800 text-amber-100' : 'text-stone-200 hover:bg-stone-800'
+                  }`}
+                  onMouseDown={e => e.preventDefault()}
+                  onClick={() => handleSelect(g)}
+                >
+                  {g.name}
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function BookModal({ book, onClose, onSave }: any) {
   const { state } = useBookStore();
@@ -32,6 +121,7 @@ function BookModal({ book, onClose, onSave }: any) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.genreId) { toast.error('Selecione um gênero'); return; }
     await onSave(form);
   };
 
@@ -57,10 +147,11 @@ function BookModal({ book, onClose, onSave }: any) {
             </div>
             <div>
               <label className="text-xs text-stone-400 mb-1 block">Gênero *</label>
-              <select className="input-field" required value={form.genreId} onChange={e => setForm(f => ({ ...f, genreId: +e.target.value }))}>
-                <option value={0}>Selecionar...</option>
-                {state.genres.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
-              </select>
+              <GenreCombobox
+                genres={state.genres}
+                value={form.genreId}
+                onChange={genreId => setForm(f => ({ ...f, genreId }))}
+              />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -152,10 +243,11 @@ function ImportBookModal({ seed, onClose, onSave }: any) {
             </div>
             <div>
               <label className="text-xs text-stone-400 mb-1 block">Gênero *</label>
-              <select className="input-field" required value={form.genreId} onChange={e => setForm(f => ({ ...f, genreId: +e.target.value }))}>
-                <option value={0}>Selecionar...</option>
-                {state.genres.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
-              </select>
+              <GenreCombobox
+                genres={state.genres}
+                value={form.genreId}
+                onChange={genreId => setForm(f => ({ ...f, genreId }))}
+              />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">

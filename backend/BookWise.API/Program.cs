@@ -2,7 +2,9 @@ using BookWise.Application.Interfaces;
 using BookWise.Application.Services;
 using BookWise.Domain.Interfaces;
 using BookWise.Infrastructure.Data.Context;
+using BookWise.Infrastructure.Data.Seed;
 using BookWise.Infrastructure.Repositories;
+using System.Net.Http.Headers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -26,7 +28,23 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
-builder.Services.AddHttpClient<IAIService, AIService>();
+builder.Services.AddHttpClient("DeepSeek", (sp, client) =>
+{
+    var cfg = sp.GetRequiredService<IConfiguration>();
+    var baseUrl = cfg["DeepSeek:BaseUrl"] ?? "https://api.deepseek.com/v1";
+    if (!baseUrl.EndsWith('/')) baseUrl += "/";
+
+    client.BaseAddress = new Uri(baseUrl);
+    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+});
+
+builder.Services.AddHttpClient("Anthropic", client =>
+{
+    client.BaseAddress = new Uri("https://api.anthropic.com/");
+    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+});
+
+builder.Services.AddScoped<IAIService, AIService>();
 builder.Services.AddHttpClient<IRemoteBookSearchService, RemoteBookSearchService>();
 
 // Controllers
@@ -71,6 +89,7 @@ using (var scope = app.Services.CreateScope())
         {
             app.Logger.LogInformation("Applying database migrations (attempt {Attempt}/{MaxAttempts})", attempt, maxAttempts);
             db.Database.Migrate();
+            GenreSeeder.Seed(db);
             app.Logger.LogInformation("Database migrations applied successfully");
             break;
         }
