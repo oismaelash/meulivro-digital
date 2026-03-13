@@ -17,4 +17,4 @@ EOF
   exit 0
 fi
 
-exec docker compose -f docker-compose.prod.yml up --build "$@"
+exec docker compose -f docker-compose.prod.yml up -d --build "$@"

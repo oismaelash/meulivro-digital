@@ -7,6 +7,7 @@ using BookWise.Application.DTOs.Responses;
 using BookWise.Application.Interfaces;
 using BookWise.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Logging;
 
 namespace BookWise.Application.Services;

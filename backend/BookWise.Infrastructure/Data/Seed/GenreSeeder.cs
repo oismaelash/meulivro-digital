@@ -1,27 +1,53 @@
 using BookWise.Domain.Entities;
 using BookWise.Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace BookWise.Infrastructure.Data.Seed;
 
 public static class GenreSeeder
 {
-    public static void Seed(BookWiseDbContext db)
-    {
-        var existing = db.Genres
-            .IgnoreQueryFilters()
-            .AsNoTracking()
-            .Select(g => g.Name)
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+    public readonly record struct SeedSummary(int Added, int Reactivated);
 
-        var toAdd = GetMainGenres()
-            .Where(g => !existing.Contains(g.Name))
+    public static SeedSummary Seed(BookWiseDbContext db, ILogger logger)
+    {
+        var existingGenres = db.Genres
+            .IgnoreQueryFilters()
             .ToList();
 
-        if (toAdd.Count == 0) return;
+        var existingByName = existingGenres
+            .GroupBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
 
-        db.Genres.AddRange(toAdd);
+        var added = 0;
+        var reactivated = 0;
+
+        foreach (var seed in GetMainGenres())
+        {
+            if (!existingByName.TryGetValue(seed.Name, out var existing))
+            {
+                db.Genres.Add(seed);
+                added++;
+                continue;
+            }
+
+            if (existing.IsActive)
+                continue;
+
+            db.Entry(existing).Property(e => e.IsActive).CurrentValue = true;
+            db.Entry(existing).Property(e => e.UpdatedAt).CurrentValue = DateTime.UtcNow;
+            reactivated++;
+        }
+
+        if (added == 0 && reactivated == 0)
+        {
+            logger.LogInformation("Genre seed: nothing to change");
+            return new SeedSummary(0, 0);
+        }
+
         db.SaveChanges();
+        logger.LogInformation("Genre seed applied: added {Added}, reactivated {Reactivated}", added, reactivated);
+        return new SeedSummary(added, reactivated);
     }
 
     private static IEnumerable<Genre> GetMainGenres()
