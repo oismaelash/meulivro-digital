@@ -44,7 +44,13 @@ public class AuthorsController : ControllerBase
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
         var result = await _authorService.DeleteAsync(id, ct);
-        return result.Success ? Ok(result) : NotFound(result);
+        if (result.Success) return Ok(result);
+        return result.ErrorCode switch
+        {
+            "not_found" => NotFound(result),
+            "has_related_books" => Conflict(result),
+            _ => BadRequest(result)
+        };
     }
 }
 
@@ -88,7 +94,13 @@ public class GenresController : ControllerBase
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
         var result = await _genreService.DeleteAsync(id, ct);
-        return result.Success ? Ok(result) : NotFound(result);
+        if (result.Success) return Ok(result);
+        return result.ErrorCode switch
+        {
+            "not_found" => NotFound(result),
+            "has_related_books" => Conflict(result),
+            _ => BadRequest(result)
+        };
     }
 }
 

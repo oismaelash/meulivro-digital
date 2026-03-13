@@ -105,14 +105,15 @@ public record ApiResponse<T>(
     bool Success,
     T? Data,
     string? Message,
-    IEnumerable<string>? Errors = null
+    IEnumerable<string>? Errors = null,
+    string? ErrorCode = null
 )
 {
     public static ApiResponse<T> Ok(T data, string? message = null) =>
         new(true, data, message);
 
-    public static ApiResponse<T> Fail(string message, IEnumerable<string>? errors = null) =>
-        new(false, default, message, errors);
+    public static ApiResponse<T> Fail(string message, IEnumerable<string>? errors = null, string? errorCode = null) =>
+        new(false, default, message, errors, errorCode);
 }
 
 public record PaginatedResponse<T>(

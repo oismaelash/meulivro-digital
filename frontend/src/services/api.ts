@@ -1,16 +1,55 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
+export class ApiError<TBody = unknown> extends Error {
+  status: number;
+  body?: TBody;
+
+  constructor(status: number, message: string, body?: TBody) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.body = body;
+  }
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     ...options,
   });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+  if (!res.ok) {
+    const contentType = res.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      let body: any = undefined;
+      try {
+        body = await res.json();
+      } catch {
+        body = undefined;
+      }
+
+      const message =
+        body?.message ||
+        (Array.isArray(body?.errors) && body.errors.length ? body.errors.join('\n') : null) ||
+        `HTTP ${res.status}`;
+
+      throw new ApiError(res.status, message, body);
+    }
+
+    let text = '';
+    try {
+      text = await res.text();
+    } catch {
+      text = '';
+    }
+    throw new ApiError(res.status, text || `HTTP ${res.status}`);
+  }
+
   return res.json();
 }
 
 // Types
-export interface ApiResponse<T> { success: boolean; data: T; message: string; errors?: string[]; }
+export interface ApiResponse<T> { success: boolean; data: T; message?: string | null; errors?: string[]; errorCode?: string | null; }
 export interface Book { id: number; title: string; description?: string; publicationYear: number; isbn?: string; coverImageUrl?: string; authorName: string; genreName: string; authorId: number; genreId: number; createdAt: string; }
 export interface BookSummary { id: number; title: string; coverImageUrl?: string; authorName: string; genreName: string; publicationYear: number; }
 export interface Author { id: number; name: string; biography?: string; nationality?: string; birthDate?: string; bookCount: number; createdAt: string; }

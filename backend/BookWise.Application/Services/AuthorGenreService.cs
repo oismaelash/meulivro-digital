@@ -87,14 +87,18 @@ public class AuthorService : IAuthorService
     {
         var author = await _unitOfWork.Authors.GetByIdWithBooksAsync(id, ct);
         if (author is null)
-            return ApiResponse<bool>.Fail($"Author with ID {id} not found.");
+            return ApiResponse<bool>.Fail($"Autor com ID {id} não encontrado.", errorCode: "not_found");
 
-        if (author.Books.Any())
-            return ApiResponse<bool>.Fail("Cannot delete author with associated books. Remove books first.");
+        var bookCount = author.Books.Count;
+        if (bookCount > 0)
+            return ApiResponse<bool>.Fail(
+                $"Não é possível excluir este autor porque existem {bookCount} livro(s) associado(s). Remova ou altere os livros primeiro.",
+                errorCode: "has_related_books"
+            );
 
         await _unitOfWork.Authors.DeleteAsync(author, ct);
         await _unitOfWork.CommitAsync(ct);
-        return ApiResponse<bool>.Ok(true, "Author deleted successfully.");
+        return ApiResponse<bool>.Ok(true, "Autor excluído com sucesso.");
     }
 }
 
@@ -164,13 +168,17 @@ public class GenreService : IGenreService
     {
         var genre = await _unitOfWork.Genres.GetByIdWithBooksAsync(id, ct);
         if (genre is null)
-            return ApiResponse<bool>.Fail($"Genre with ID {id} not found.");
+            return ApiResponse<bool>.Fail($"Gênero com ID {id} não encontrado.", errorCode: "not_found");
 
-        if (genre.Books.Any())
-            return ApiResponse<bool>.Fail("Cannot delete genre with associated books. Remove books first.");
+        var bookCount = genre.Books.Count;
+        if (bookCount > 0)
+            return ApiResponse<bool>.Fail(
+                $"Não é possível excluir este gênero porque existem {bookCount} livro(s) associado(s). Remova ou altere os livros primeiro.",
+                errorCode: "has_related_books"
+            );
 
         await _unitOfWork.Genres.DeleteAsync(genre, ct);
         await _unitOfWork.CommitAsync(ct);
-        return ApiResponse<bool>.Ok(true, "Genre deleted successfully.");
+        return ApiResponse<bool>.Ok(true, "Gênero excluído com sucesso.");
     }
 }

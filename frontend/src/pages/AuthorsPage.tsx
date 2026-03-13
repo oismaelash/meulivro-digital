@@ -4,6 +4,9 @@ import { useBookStore } from '../store/BookContext';
 import { authorsApi, genresApi, CreateAuthorDto, CreateGenreDto } from '../services/api';
 import toast from 'react-hot-toast';
 
+const getErrorMessage = (err: unknown, fallback: string) =>
+  err instanceof Error && err.message ? err.message : fallback;
+
 // ===== AUTHORS =====
 function AuthorModal({ author, onClose, onSave }: any) {
   const [form, setForm] = useState<CreateAuthorDto>(author || { name: '', biography: '', nationality: '', birthDate: '' });
@@ -60,10 +63,10 @@ export function AuthorsPage() {
       } else {
         const res = await authorsApi.create(form);
         if (res.success) { dispatch({ type: 'ADD_AUTHOR', payload: res.data }); toast.success('Autor criado!'); }
-        else toast.error(res.message);
+        else toast.error(res.message || 'Erro ao salvar');
       }
       setModal({ open: false });
-    } catch { toast.error('Erro ao salvar'); }
+    } catch (err) { toast.error(getErrorMessage(err, 'Erro ao salvar')); }
   };
 
   const handleDelete = async (id: number) => {
@@ -71,8 +74,8 @@ export function AuthorsPage() {
     try {
       const res = await authorsApi.delete(id);
       if (res.success) { dispatch({ type: 'DELETE_AUTHOR', payload: id }); toast.success('Autor excluído!'); }
-      else toast.error(res.message);
-    } catch { toast.error('Erro ao excluir'); }
+      else toast.error(res.message || 'Erro ao excluir');
+    } catch (err) { toast.error(getErrorMessage(err, 'Erro ao excluir')); }
   };
 
   return (
@@ -170,10 +173,10 @@ export function GenresPage() {
       } else {
         const res = await genresApi.create(form);
         if (res.success) { dispatch({ type: 'ADD_GENRE', payload: res.data }); toast.success('Gênero criado!'); }
-        else toast.error(res.message);
+        else toast.error(res.message || 'Erro ao salvar');
       }
       setModal({ open: false });
-    } catch { toast.error('Erro ao salvar'); }
+    } catch (err) { toast.error(getErrorMessage(err, 'Erro ao salvar')); }
   };
 
   const handleDelete = async (id: number) => {
@@ -181,8 +184,8 @@ export function GenresPage() {
     try {
       const res = await genresApi.delete(id);
       if (res.success) { dispatch({ type: 'DELETE_GENRE', payload: id }); toast.success('Gênero excluído!'); }
-      else toast.error(res.message);
-    } catch { toast.error('Erro ao excluir'); }
+      else toast.error(res.message || 'Erro ao excluir');
+    } catch (err) { toast.error(getErrorMessage(err, 'Erro ao excluir')); }
   };
 
   const colors = ['bg-emerald-900/30 text-emerald-400', 'bg-violet-900/30 text-violet-400', 'bg-rose-900/30 text-rose-400', 'bg-cyan-900/30 text-cyan-400', 'bg-orange-900/30 text-orange-400'];
