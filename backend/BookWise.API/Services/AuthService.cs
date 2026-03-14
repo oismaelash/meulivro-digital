@@ -112,6 +112,7 @@ public class AuthService : IAuthService
         }
 
         user.MarkLogin();
+        await EnsureDefaultGenresAsync(user.Id, ct);
         await _uow.CommitAsync(ct);
 
         return ApiResponse<AuthTokenResponse>.Ok(IssueToken(user));
@@ -198,6 +199,26 @@ public class AuthService : IAuthService
         var user = await _uow.Users.GetByGoogleSubjectAsync(googleSubject, ct);
         if (user is null)
         {
+            if (!string.IsNullOrWhiteSpace(email))
+            {
+                var byEmail = await _uow.Users.GetByEmailAsync(email, ct);
+                if (byEmail is not null)
+                {
+                    if (!string.IsNullOrWhiteSpace(byEmail.GoogleSubject) &&
+                        !string.Equals(byEmail.GoogleSubject, googleSubject, StringComparison.Ordinal))
+                        return ApiResponse<AuthTokenResponse>.Fail("Falha ao autenticar com Google.", errorCode: "GOOGLE_EMAIL_ALREADY_LINKED");
+
+                    if (string.IsNullOrWhiteSpace(byEmail.GoogleSubject))
+                        byEmail.AttachGoogleSubject(googleSubject);
+
+                    byEmail.UpdateGoogleProfile(email, name);
+                    byEmail.MarkLogin();
+                    await EnsureDefaultGenresAsync(byEmail.Id, ct);
+                    await _uow.CommitAsync(ct);
+                    return ApiResponse<AuthTokenResponse>.Ok(IssueToken(byEmail));
+                }
+            }
+
             user = UserAccount.CreateFromGoogle(googleSubject, email, name);
             await _uow.Users.AddAsync(user, ct);
         }
@@ -207,6 +228,7 @@ public class AuthService : IAuthService
         }
 
         user.MarkLogin();
+        await EnsureDefaultGenresAsync(user.Id, ct);
         await _uow.CommitAsync(ct);
 
         return ApiResponse<AuthTokenResponse>.Ok(IssueToken(user));
@@ -271,6 +293,26 @@ public class AuthService : IAuthService
         var user = await _uow.Users.GetByGoogleSubjectAsync(sub, ct);
         if (user is null)
         {
+            if (!string.IsNullOrWhiteSpace(email))
+            {
+                var byEmail = await _uow.Users.GetByEmailAsync(email, ct);
+                if (byEmail is not null)
+                {
+                    if (!string.IsNullOrWhiteSpace(byEmail.GoogleSubject) &&
+                        !string.Equals(byEmail.GoogleSubject, sub, StringComparison.Ordinal))
+                        return ApiResponse<AuthTokenResponse>.Fail("Falha ao autenticar com Google.", errorCode: "GOOGLE_EMAIL_ALREADY_LINKED");
+
+                    if (string.IsNullOrWhiteSpace(byEmail.GoogleSubject))
+                        byEmail.AttachGoogleSubject(sub);
+
+                    byEmail.UpdateGoogleProfile(email, name);
+                    byEmail.MarkLogin();
+                    await EnsureDefaultGenresAsync(byEmail.Id, ct);
+                    await _uow.CommitAsync(ct);
+                    return ApiResponse<AuthTokenResponse>.Ok(IssueToken(byEmail));
+                }
+            }
+
             user = UserAccount.CreateFromGoogle(sub, email, name);
             await _uow.Users.AddAsync(user, ct);
         }
@@ -280,9 +322,28 @@ public class AuthService : IAuthService
         }
 
         user.MarkLogin();
+        await EnsureDefaultGenresAsync(user.Id, ct);
         await _uow.CommitAsync(ct);
 
         return ApiResponse<AuthTokenResponse>.Ok(IssueToken(user));
+    }
+
+    private static readonly string[] DefaultGenreNames =
+    [
+        "Romance", "Fantasia", "Ficção Científica", "Aventura", "Mistério", "Suspense", "Thriller", "Terror", "Drama",
+        "Poesia", "Contos", "Clássicos", "Literatura Brasileira", "Literatura Estrangeira", "Infantil", "Jovem Adulto",
+        "Quadrinhos", "Mangá", "Não-ficção", "Biografia", "História", "Política", "Filosofia", "Psicologia",
+        "Religião e Espiritualidade", "Autoajuda", "Desenvolvimento Pessoal", "Negócios", "Finanças", "Educação",
+        "Ciência", "Saúde", "Tecnologia", "Programação", "Artes", "Gastronomia", "Viagem"
+    ];
+
+    private async Task EnsureDefaultGenresAsync(int userId, CancellationToken ct)
+    {
+        var any = await _uow.Genres.AnyAsync(userId, ct);
+        if (any) return;
+
+        foreach (var name in DefaultGenreNames)
+            await _uow.Genres.AddAsync(new Genre(userId, name, null), ct);
     }
 
     private async Task<(string Sub, string? Email, string? Name)?> TryGetGoogleUserInfoAsync(string accessToken, CancellationToken ct)

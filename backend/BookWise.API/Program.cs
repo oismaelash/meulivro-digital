@@ -148,7 +148,6 @@ using (var scope = app.Services.CreateScope())
         {
             app.Logger.LogInformation("Applying database migrations (attempt {Attempt}/{MaxAttempts})", attempt, maxAttempts);
             db.Database.Migrate();
-            GenreSeeder.Seed(db, app.Logger);
             app.Logger.LogInformation("Database migrations applied successfully");
             break;
         }

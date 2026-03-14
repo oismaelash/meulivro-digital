@@ -2,6 +2,7 @@ namespace BookWise.Domain.Entities;
 
 public class Genre : BaseEntity
 {
+    public int UserAccountId { get; private set; }
     public string Name { get; private set; } = null!;
     public string? Description { get; private set; }
 
@@ -9,8 +10,9 @@ public class Genre : BaseEntity
 
     protected Genre() { }
 
-    public Genre(string name, string? description)
+    public Genre(int userAccountId, string name, string? description)
     {
+        UserAccountId = userAccountId;
         Name = name;
         Description = description;
     }

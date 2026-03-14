@@ -2,6 +2,7 @@ namespace BookWise.Domain.Entities;
 
 public class Author : BaseEntity
 {
+    public int UserAccountId { get; private set; }
     public string Name { get; private set; } = null!;
     public string? Biography { get; private set; }
     public string? Nationality { get; private set; }
@@ -11,8 +12,9 @@ public class Author : BaseEntity
 
     protected Author() { }
 
-    public Author(string name, string? biography, string? nationality, DateTime? birthDate)
+    public Author(int userAccountId, string name, string? biography, string? nationality, DateTime? birthDate)
     {
+        UserAccountId = userAccountId;
         Name = name;
         Biography = biography;
         Nationality = nationality;

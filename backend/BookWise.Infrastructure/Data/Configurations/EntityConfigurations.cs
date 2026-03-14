@@ -11,6 +11,7 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
         builder.ToTable("books");
         builder.HasKey(b => b.Id);
         builder.Property(b => b.Id).HasColumnName("id").UseIdentityColumn();
+        builder.Property(b => b.UserAccountId).HasColumnName("user_account_id").IsRequired();
         builder.Property(b => b.Title).HasColumnName("title").IsRequired().HasMaxLength(300);
         builder.Property(b => b.Description).HasColumnName("description");
         builder.Property(b => b.PublicationYear).HasColumnName("publication_year").IsRequired();
@@ -32,8 +33,8 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
             .HasForeignKey(b => b.GenreId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(b => b.ISBN).IsUnique().HasFilter("isbn IS NOT NULL");
-        builder.HasIndex(b => b.Title);
+        builder.HasIndex(b => new { b.UserAccountId, b.ISBN }).IsUnique().HasFilter("isbn IS NOT NULL");
+        builder.HasIndex(b => new { b.UserAccountId, b.Title });
         builder.HasQueryFilter(b => b.IsActive);
     }
 }
@@ -45,6 +46,7 @@ public class AuthorConfiguration : IEntityTypeConfiguration<Author>
         builder.ToTable("authors");
         builder.HasKey(a => a.Id);
         builder.Property(a => a.Id).HasColumnName("id").UseIdentityColumn();
+        builder.Property(a => a.UserAccountId).HasColumnName("user_account_id").IsRequired();
         builder.Property(a => a.Name).HasColumnName("name").IsRequired().HasMaxLength(200);
         builder.Property(a => a.Biography).HasColumnName("biography");
         builder.Property(a => a.Nationality).HasColumnName("nationality").HasMaxLength(100);
@@ -53,7 +55,7 @@ public class AuthorConfiguration : IEntityTypeConfiguration<Author>
         builder.Property(a => a.UpdatedAt).HasColumnName("updated_at");
         builder.Property(a => a.IsActive).HasColumnName("is_active").HasDefaultValue(true);
 
-        builder.HasIndex(a => a.Name);
+        builder.HasIndex(a => new { a.UserAccountId, a.Name });
         builder.HasQueryFilter(a => a.IsActive);
     }
 }
@@ -65,13 +67,14 @@ public class GenreConfiguration : IEntityTypeConfiguration<Genre>
         builder.ToTable("genres");
         builder.HasKey(g => g.Id);
         builder.Property(g => g.Id).HasColumnName("id").UseIdentityColumn();
+        builder.Property(g => g.UserAccountId).HasColumnName("user_account_id").IsRequired();
         builder.Property(g => g.Name).HasColumnName("name").IsRequired().HasMaxLength(100);
         builder.Property(g => g.Description).HasColumnName("description");
         builder.Property(g => g.CreatedAt).HasColumnName("created_at");
         builder.Property(g => g.UpdatedAt).HasColumnName("updated_at");
         builder.Property(g => g.IsActive).HasColumnName("is_active").HasDefaultValue(true);
 
-        builder.HasIndex(g => g.Name).IsUnique();
+        builder.HasIndex(g => new { g.UserAccountId, g.Name }).IsUnique();
         builder.HasQueryFilter(g => g.IsActive);
     }
 }

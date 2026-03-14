@@ -2,6 +2,7 @@ namespace BookWise.Domain.Entities;
 
 public class Book : BaseEntity
 {
+    public int UserAccountId { get; private set; }
     public string Title { get; private set; } = null!;
     public string? Description { get; private set; }
     public string? CoverImageUrl { get; private set; }
@@ -15,8 +16,9 @@ public class Book : BaseEntity
 
     protected Book() { }
 
-    public Book(string title, string? description, int publicationYear, string? isbn, int authorId, int genreId, string? coverImageUrl = null)
+    public Book(int userAccountId, string title, string? description, int publicationYear, string? isbn, int authorId, int genreId, string? coverImageUrl = null)
     {
+        UserAccountId = userAccountId;
         Title = title;
         Description = description;
         PublicationYear = publicationYear;

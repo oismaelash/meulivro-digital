@@ -49,39 +49,42 @@ public class BookRepository : BaseRepository<Book>, IBookRepository
 {
     public BookRepository(BookWiseDbContext context) : base(context) { }
 
-    public async Task<IEnumerable<Book>> GetAllWithDetailsAsync(CancellationToken ct = default) =>
+    public async Task<IEnumerable<Book>> GetAllWithDetailsAsync(int userId, CancellationToken ct = default) =>
         await _context.Books
             .Include(b => b.Author)
             .Include(b => b.Genre)
+            .Where(b => b.UserAccountId == userId)
             .OrderByDescending(b => b.CreatedAt)
             .ToListAsync(ct);
 
-    public async Task<Book?> GetByIdWithDetailsAsync(int id, CancellationToken ct = default) =>
+    public async Task<Book?> GetByIdWithDetailsAsync(int userId, int id, CancellationToken ct = default) =>
         await _context.Books
             .Include(b => b.Author)
             .Include(b => b.Genre)
-            .FirstOrDefaultAsync(b => b.Id == id, ct);
+            .FirstOrDefaultAsync(b => b.Id == id && b.UserAccountId == userId, ct);
 
-    public async Task<IEnumerable<Book>> GetByAuthorAsync(int authorId, CancellationToken ct = default) =>
+    public async Task<IEnumerable<Book>> GetByAuthorAsync(int userId, int authorId, CancellationToken ct = default) =>
         await _context.Books
             .Include(b => b.Author)
             .Include(b => b.Genre)
-            .Where(b => b.AuthorId == authorId)
+            .Where(b => b.AuthorId == authorId && b.UserAccountId == userId)
             .ToListAsync(ct);
 
-    public async Task<IEnumerable<Book>> GetByGenreAsync(int genreId, CancellationToken ct = default) =>
+    public async Task<IEnumerable<Book>> GetByGenreAsync(int userId, int genreId, CancellationToken ct = default) =>
         await _context.Books
             .Include(b => b.Author)
             .Include(b => b.Genre)
-            .Where(b => b.GenreId == genreId)
+            .Where(b => b.GenreId == genreId && b.UserAccountId == userId)
             .ToListAsync(ct);
 
-    public async Task<IEnumerable<Book>> SearchAsync(string term, CancellationToken ct = default) =>
+    public async Task<IEnumerable<Book>> SearchAsync(int userId, string term, CancellationToken ct = default) =>
         await _context.Books
             .Include(b => b.Author)
             .Include(b => b.Genre)
-            .Where(b => EF.Functions.ILike(b.Title, $"%{term}%") ||
+            .Where(b => b.UserAccountId == userId && (
+                        EF.Functions.ILike(b.Title, $"%{term}%") ||
                         EF.Functions.ILike(b.Author.Name, $"%{term}%"))
+            )
             .ToListAsync(ct);
 }
 
@@ -89,36 +92,49 @@ public class AuthorRepository : BaseRepository<Author>, IAuthorRepository
 {
     public AuthorRepository(BookWiseDbContext context) : base(context) { }
 
-    public async Task<IEnumerable<Author>> GetAllWithBooksAsync(CancellationToken ct = default) =>
-        await _context.Authors.Include(a => a.Books).OrderBy(a => a.Name).ToListAsync(ct);
+    public async Task<IEnumerable<Author>> GetAllWithBooksAsync(int userId, CancellationToken ct = default) =>
+        await _context.Authors
+            .Include(a => a.Books)
+            .Where(a => a.UserAccountId == userId)
+            .OrderBy(a => a.Name)
+            .ToListAsync(ct);
 
-    public async Task<Author?> GetByIdWithBooksAsync(int id, CancellationToken ct = default) =>
-        await _context.Authors.Include(a => a.Books).ThenInclude(b => b.Genre)
-            .FirstOrDefaultAsync(a => a.Id == id, ct);
+    public async Task<Author?> GetByIdWithBooksAsync(int userId, int id, CancellationToken ct = default) =>
+        await _context.Authors
+            .Include(a => a.Books).ThenInclude(b => b.Genre)
+            .FirstOrDefaultAsync(a => a.Id == id && a.UserAccountId == userId, ct);
 
-    public async Task<bool> ExistsByNameAsync(string name, CancellationToken ct = default) =>
-        await _context.Authors.AnyAsync(a => a.Name.ToLower() == name.ToLower(), ct);
+    public async Task<bool> ExistsByNameAsync(int userId, string name, CancellationToken ct = default) =>
+        await _context.Authors.AnyAsync(a => a.UserAccountId == userId && a.Name.ToLower() == name.ToLower(), ct);
 
-    public async Task<Author?> GetByNameAsync(string name, CancellationToken ct = default) =>
-        await _context.Authors.FirstOrDefaultAsync(a => a.Name.ToLower() == name.ToLower(), ct);
+    public async Task<Author?> GetByNameAsync(int userId, string name, CancellationToken ct = default) =>
+        await _context.Authors.FirstOrDefaultAsync(a => a.UserAccountId == userId && a.Name.ToLower() == name.ToLower(), ct);
 }
 
 public class GenreRepository : BaseRepository<Genre>, IGenreRepository
 {
     public GenreRepository(BookWiseDbContext context) : base(context) { }
 
-    public async Task<IEnumerable<Genre>> GetAllWithBooksAsync(CancellationToken ct = default) =>
-        await _context.Genres.Include(g => g.Books).OrderBy(g => g.Name).ToListAsync(ct);
+    public async Task<IEnumerable<Genre>> GetAllWithBooksAsync(int userId, CancellationToken ct = default) =>
+        await _context.Genres
+            .Include(g => g.Books)
+            .Where(g => g.UserAccountId == userId)
+            .OrderBy(g => g.Name)
+            .ToListAsync(ct);
 
-    public async Task<Genre?> GetByIdWithBooksAsync(int id, CancellationToken ct = default) =>
-        await _context.Genres.Include(g => g.Books).ThenInclude(b => b.Author)
-            .FirstOrDefaultAsync(g => g.Id == id, ct);
+    public async Task<Genre?> GetByIdWithBooksAsync(int userId, int id, CancellationToken ct = default) =>
+        await _context.Genres
+            .Include(g => g.Books).ThenInclude(b => b.Author)
+            .FirstOrDefaultAsync(g => g.Id == id && g.UserAccountId == userId, ct);
 
-    public async Task<bool> ExistsByNameAsync(string name, CancellationToken ct = default) =>
-        await _context.Genres.AnyAsync(g => g.Name.ToLower() == name.ToLower(), ct);
+    public async Task<bool> ExistsByNameAsync(int userId, string name, CancellationToken ct = default) =>
+        await _context.Genres.AnyAsync(g => g.UserAccountId == userId && g.Name.ToLower() == name.ToLower(), ct);
 
-    public async Task<Genre?> GetByNameAsync(string name, CancellationToken ct = default) =>
-        await _context.Genres.FirstOrDefaultAsync(g => g.Name.ToLower() == name.ToLower(), ct);
+    public async Task<Genre?> GetByNameAsync(int userId, string name, CancellationToken ct = default) =>
+        await _context.Genres.FirstOrDefaultAsync(g => g.UserAccountId == userId && g.Name.ToLower() == name.ToLower(), ct);
+
+    public async Task<bool> AnyAsync(int userId, CancellationToken ct = default) =>
+        await _context.Genres.AnyAsync(g => g.UserAccountId == userId, ct);
 }
 
 public class UserAccountRepository : BaseRepository<UserAccount>, IUserAccountRepository
@@ -130,6 +146,12 @@ public class UserAccountRepository : BaseRepository<UserAccount>, IUserAccountRe
 
     public async Task<UserAccount?> GetByPhoneNumberAsync(string phoneNumberE164, CancellationToken ct = default) =>
         await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumberE164 == phoneNumberE164, ct);
+
+    public async Task<UserAccount?> GetByEmailAsync(string email, CancellationToken ct = default)
+    {
+        var normalized = email.Trim().ToLower();
+        return await _context.Users.FirstOrDefaultAsync(u => u.Email != null && u.Email.ToLower() == normalized, ct);
+    }
 }
 
 public class LoginOtpRepository : BaseRepository<LoginOtp>, ILoginOtpRepository

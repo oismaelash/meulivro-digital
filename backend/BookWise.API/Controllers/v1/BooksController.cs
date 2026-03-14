@@ -1,5 +1,6 @@
 using BookWise.Application.DTOs.Requests;
 using BookWise.Application.Interfaces;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +26,7 @@ public class BooksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(CancellationToken ct)
     {
-        var result = await _bookService.GetAllAsync(ct);
+        var result = await _bookService.GetAllAsync(GetUserId(), ct);
         return Ok(result);
     }
 
@@ -35,7 +36,7 @@ public class BooksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id, CancellationToken ct)
     {
-        var result = await _bookService.GetByIdAsync(id, ct);
+        var result = await _bookService.GetByIdAsync(GetUserId(), id, ct);
         return result.Success ? Ok(result) : NotFound(result);
     }
 
@@ -47,7 +48,7 @@ public class BooksController : ControllerBase
         if (string.IsNullOrWhiteSpace(term))
             return BadRequest("Search term is required.");
 
-        var result = await _bookService.SearchAsync(term, ct);
+        var result = await _bookService.SearchAsync(GetUserId(), term, ct);
         return Ok(result);
     }
 
@@ -80,7 +81,7 @@ public class BooksController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var result = await _bookService.ImportRemoteAsync(request, ct);
+        var result = await _bookService.ImportRemoteAsync(GetUserId(), request, ct);
         if (!result.Success)
             return BadRequest(result);
 
@@ -96,7 +97,7 @@ public class BooksController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var result = await _bookService.CreateAsync(request, ct);
+        var result = await _bookService.CreateAsync(GetUserId(), request, ct);
         if (!result.Success)
             return BadRequest(result);
 
@@ -113,7 +114,7 @@ public class BooksController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var result = await _bookService.UpdateAsync(id, request, ct);
+        var result = await _bookService.UpdateAsync(GetUserId(), id, request, ct);
         return result.Success ? Ok(result) : NotFound(result);
     }
 
@@ -123,7 +124,13 @@ public class BooksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
-        var result = await _bookService.DeleteAsync(id, ct);
+        var result = await _bookService.DeleteAsync(GetUserId(), id, ct);
         return result.Success ? Ok(result) : NotFound(result);
+    }
+
+    private int GetUserId()
+    {
+        var userIdRaw = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+        return int.TryParse(userIdRaw, out var userId) ? userId : 0;
     }
 }

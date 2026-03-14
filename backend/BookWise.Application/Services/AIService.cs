@@ -72,13 +72,13 @@ public class AIService : IAIService
     }
 
     public async Task<ApiResponse<RecommendationResponse>> GetRecommendationsAsync(
-        int bookId, CancellationToken ct = default)
+        int userId, int bookId, CancellationToken ct = default)
     {
-        var book = await _unitOfWork.Books.GetByIdWithDetailsAsync(bookId, ct);
+        var book = await _unitOfWork.Books.GetByIdWithDetailsAsync(userId, bookId, ct);
         if (book is null)
             return ApiResponse<RecommendationResponse>.Fail($"Book {bookId} not found.");
 
-        var allBooks = await _unitOfWork.Books.GetAllWithDetailsAsync(ct);
+        var allBooks = await _unitOfWork.Books.GetAllWithDetailsAsync(userId, ct);
         var catalog = allBooks.Where(b => b.Id != bookId)
             .Select(b => $"- {b.Title} by {b.Author.Name} [{b.Genre.Name}]")
             .Take(50);
@@ -124,9 +124,9 @@ public class AIService : IAIService
         }
     }
 
-    public async Task<ApiResponse<TrendAnalysisResponse>> AnalyzeTrendsAsync(CancellationToken ct = default)
+    public async Task<ApiResponse<TrendAnalysisResponse>> AnalyzeTrendsAsync(int userId, CancellationToken ct = default)
     {
-        var genres = await _unitOfWork.Genres.GetAllWithBooksAsync(ct);
+        var genres = await _unitOfWork.Genres.GetAllWithBooksAsync(userId, ct);
         var totalBooks = genres.Sum(g => g.Books.Count);
 
         if (totalBooks == 0)
@@ -180,9 +180,9 @@ public class AIService : IAIService
         }
     }
 
-    public async Task<ApiResponse<ChatResponse>> ChatAsync(ChatRequest request, CancellationToken ct = default)
+    public async Task<ApiResponse<ChatResponse>> ChatAsync(int userId, ChatRequest request, CancellationToken ct = default)
     {
-        var books = await _unitOfWork.Books.GetAllWithDetailsAsync(ct);
+        var books = await _unitOfWork.Books.GetAllWithDetailsAsync(userId, ct);
         var catalogSummary = string.Join("\n", books.Take(100)
             .Select(b => $"- ID:{b.Id} | {b.Title} | {b.Author.Name} | {b.Genre.Name} | {b.PublicationYear}"));
 

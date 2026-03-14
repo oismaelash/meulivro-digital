@@ -9,10 +9,11 @@ public static class GenreSeeder
 {
     public readonly record struct SeedSummary(int Added, int Reactivated);
 
-    public static SeedSummary Seed(BookWiseDbContext db, ILogger logger)
+    public static SeedSummary SeedForUser(BookWiseDbContext db, int userId, ILogger logger)
     {
         var existingGenres = db.Genres
             .IgnoreQueryFilters()
+            .Where(g => g.UserAccountId == userId)
             .ToList();
 
         var existingByName = existingGenres
@@ -22,7 +23,7 @@ public static class GenreSeeder
         var added = 0;
         var reactivated = 0;
 
-        foreach (var seed in GetMainGenres())
+        foreach (var seed in GetMainGenres(userId))
         {
             if (!existingByName.TryGetValue(seed.Name, out var existing))
             {
@@ -50,47 +51,47 @@ public static class GenreSeeder
         return new SeedSummary(added, reactivated);
     }
 
-    private static IEnumerable<Genre> GetMainGenres()
+    private static IEnumerable<Genre> GetMainGenres(int userId)
     {
         return
         [
-            new Genre("Romance", null),
-            new Genre("Fantasia", null),
-            new Genre("Ficção Científica", null),
-            new Genre("Aventura", null),
-            new Genre("Mistério", null),
-            new Genre("Suspense", null),
-            new Genre("Thriller", null),
-            new Genre("Terror", null),
-            new Genre("Drama", null),
-            new Genre("Poesia", null),
-            new Genre("Contos", null),
-            new Genre("Clássicos", null),
-            new Genre("Literatura Brasileira", null),
-            new Genre("Literatura Estrangeira", null),
-            new Genre("Infantil", null),
-            new Genre("Jovem Adulto", null),
-            new Genre("Quadrinhos", null),
-            new Genre("Mangá", null),
-            new Genre("Não-ficção", null),
-            new Genre("Biografia", null),
-            new Genre("História", null),
-            new Genre("Política", null),
-            new Genre("Filosofia", null),
-            new Genre("Psicologia", null),
-            new Genre("Religião e Espiritualidade", null),
-            new Genre("Autoajuda", null),
-            new Genre("Desenvolvimento Pessoal", null),
-            new Genre("Negócios", null),
-            new Genre("Finanças", null),
-            new Genre("Educação", null),
-            new Genre("Ciência", null),
-            new Genre("Saúde", null),
-            new Genre("Tecnologia", null),
-            new Genre("Programação", null),
-            new Genre("Artes", null),
-            new Genre("Gastronomia", null),
-            new Genre("Viagem", null)
+            new Genre(userId, "Romance", null),
+            new Genre(userId, "Fantasia", null),
+            new Genre(userId, "Ficção Científica", null),
+            new Genre(userId, "Aventura", null),
+            new Genre(userId, "Mistério", null),
+            new Genre(userId, "Suspense", null),
+            new Genre(userId, "Thriller", null),
+            new Genre(userId, "Terror", null),
+            new Genre(userId, "Drama", null),
+            new Genre(userId, "Poesia", null),
+            new Genre(userId, "Contos", null),
+            new Genre(userId, "Clássicos", null),
+            new Genre(userId, "Literatura Brasileira", null),
+            new Genre(userId, "Literatura Estrangeira", null),
+            new Genre(userId, "Infantil", null),
+            new Genre(userId, "Jovem Adulto", null),
+            new Genre(userId, "Quadrinhos", null),
+            new Genre(userId, "Mangá", null),
+            new Genre(userId, "Não-ficção", null),
+            new Genre(userId, "Biografia", null),
+            new Genre(userId, "História", null),
+            new Genre(userId, "Política", null),
+            new Genre(userId, "Filosofia", null),
+            new Genre(userId, "Psicologia", null),
+            new Genre(userId, "Religião e Espiritualidade", null),
+            new Genre(userId, "Autoajuda", null),
+            new Genre(userId, "Desenvolvimento Pessoal", null),
+            new Genre(userId, "Negócios", null),
+            new Genre(userId, "Finanças", null),
+            new Genre(userId, "Educação", null),
+            new Genre(userId, "Ciência", null),
+            new Genre(userId, "Saúde", null),
+            new Genre(userId, "Tecnologia", null),
+            new Genre(userId, "Programação", null),
+            new Genre(userId, "Artes", null),
+            new Genre(userId, "Gastronomia", null),
+            new Genre(userId, "Viagem", null)
         ];
     }
 }

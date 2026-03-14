@@ -39,6 +39,12 @@ public class UserAccount : BaseEntity
         UpdatedAt = DateTime.UtcNow;
     }
 
+    public void AttachGoogleSubject(string googleSubject)
+    {
+        GoogleSubject = googleSubject;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
     public void MarkLogin()
     {
         LastLoginAt = DateTime.UtcNow;

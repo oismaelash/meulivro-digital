@@ -1,5 +1,6 @@
 using BookWise.Application.DTOs.Requests;
 using BookWise.Application.Interfaces;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,12 +17,12 @@ public class AuthorsController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken ct) =>
-        Ok(await _authorService.GetAllAsync(ct));
+        Ok(await _authorService.GetAllAsync(GetUserId(), ct));
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id, CancellationToken ct)
     {
-        var result = await _authorService.GetByIdAsync(id, ct);
+        var result = await _authorService.GetByIdAsync(GetUserId(), id, ct);
         return result.Success ? Ok(result) : NotFound(result);
     }
 
@@ -29,7 +30,7 @@ public class AuthorsController : ControllerBase
     public async Task<IActionResult> Create([FromBody] CreateAuthorRequest request, CancellationToken ct)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-        var result = await _authorService.CreateAsync(request, ct);
+        var result = await _authorService.CreateAsync(GetUserId(), request, ct);
         if (!result.Success) return BadRequest(result);
         return CreatedAtAction(nameof(GetById), new { id = result.Data!.Id }, result);
     }
@@ -38,14 +39,14 @@ public class AuthorsController : ControllerBase
     public async Task<IActionResult> Update(int id, [FromBody] UpdateAuthorRequest request, CancellationToken ct)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-        var result = await _authorService.UpdateAsync(id, request, ct);
+        var result = await _authorService.UpdateAsync(GetUserId(), id, request, ct);
         return result.Success ? Ok(result) : NotFound(result);
     }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
-        var result = await _authorService.DeleteAsync(id, ct);
+        var result = await _authorService.DeleteAsync(GetUserId(), id, ct);
         if (result.Success) return Ok(result);
         return result.ErrorCode switch
         {
@@ -53,6 +54,12 @@ public class AuthorsController : ControllerBase
             "has_related_books" => Conflict(result),
             _ => BadRequest(result)
         };
+    }
+
+    private int GetUserId()
+    {
+        var userIdRaw = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+        return int.TryParse(userIdRaw, out var userId) ? userId : 0;
     }
 }
 
@@ -67,12 +74,12 @@ public class GenresController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken ct) =>
-        Ok(await _genreService.GetAllAsync(ct));
+        Ok(await _genreService.GetAllAsync(GetUserId(), ct));
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id, CancellationToken ct)
     {
-        var result = await _genreService.GetByIdAsync(id, ct);
+        var result = await _genreService.GetByIdAsync(GetUserId(), id, ct);
         return result.Success ? Ok(result) : NotFound(result);
     }
 
@@ -80,7 +87,7 @@ public class GenresController : ControllerBase
     public async Task<IActionResult> Create([FromBody] CreateGenreRequest request, CancellationToken ct)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-        var result = await _genreService.CreateAsync(request, ct);
+        var result = await _genreService.CreateAsync(GetUserId(), request, ct);
         if (!result.Success) return BadRequest(result);
         return CreatedAtAction(nameof(GetById), new { id = result.Data!.Id }, result);
     }
@@ -89,14 +96,14 @@ public class GenresController : ControllerBase
     public async Task<IActionResult> Update(int id, [FromBody] UpdateGenreRequest request, CancellationToken ct)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-        var result = await _genreService.UpdateAsync(id, request, ct);
+        var result = await _genreService.UpdateAsync(GetUserId(), id, request, ct);
         return result.Success ? Ok(result) : NotFound(result);
     }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
-        var result = await _genreService.DeleteAsync(id, ct);
+        var result = await _genreService.DeleteAsync(GetUserId(), id, ct);
         if (result.Success) return Ok(result);
         return result.ErrorCode switch
         {
@@ -104,6 +111,12 @@ public class GenresController : ControllerBase
             "has_related_books" => Conflict(result),
             _ => BadRequest(result)
         };
+    }
+
+    private int GetUserId()
+    {
+        var userIdRaw = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+        return int.TryParse(userIdRaw, out var userId) ? userId : 0;
     }
 }
 
@@ -129,7 +142,7 @@ public class AIController : ControllerBase
     [HttpGet("recommendations/{bookId:int}")]
     public async Task<IActionResult> GetRecommendations(int bookId, CancellationToken ct)
     {
-        var result = await _aiService.GetRecommendationsAsync(bookId, ct);
+        var result = await _aiService.GetRecommendationsAsync(GetUserId(), bookId, ct);
         return result.Success ? Ok(result) : NotFound(result);
     }
 
@@ -137,7 +150,7 @@ public class AIController : ControllerBase
     [HttpGet("trends")]
     public async Task<IActionResult> AnalyzeTrends(CancellationToken ct)
     {
-        var result = await _aiService.AnalyzeTrendsAsync(ct);
+        var result = await _aiService.AnalyzeTrendsAsync(GetUserId(), ct);
         return result.Success ? Ok(result) : StatusCode(503, result);
     }
 
@@ -146,7 +159,13 @@ public class AIController : ControllerBase
     public async Task<IActionResult> Chat([FromBody] ChatRequest request, CancellationToken ct)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-        var result = await _aiService.ChatAsync(request, ct);
+        var result = await _aiService.ChatAsync(GetUserId(), request, ct);
         return result.Success ? Ok(result) : StatusCode(503, result);
+    }
+
+    private int GetUserId()
+    {
+        var userIdRaw = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+        return int.TryParse(userIdRaw, out var userId) ? userId : 0;
     }
 }

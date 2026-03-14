@@ -1,10 +1,10 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, NavLink, useLocation, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, NavLink, useLocation, Outlet, useNavigate } from 'react-router-dom';
 import { BookProvider } from './store/BookContext';
 import { Toaster } from 'react-hot-toast';
-import { BookOpen, Users, Tag, Sparkles, LayoutDashboard, Menu, X, Rocket } from 'lucide-react';
+import { BookOpen, Users, Tag, Sparkles, LayoutDashboard, Menu, X, Rocket, LogOut } from 'lucide-react';
 import './index.css';
-import { AuthProvider } from './auth/AuthContext';
+import { AuthProvider, useAuth } from './auth/AuthContext';
 import { RequireAuth } from './auth/RequireAuth';
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -25,7 +25,9 @@ const navItems = [
 
 function Sidebar() {
   const [open, setOpen] = React.useState(false);
-  const location = useLocation();
+  useLocation();
+  const navigate = useNavigate();
+  const { logout, user } = useAuth();
 
   return (
     <>
@@ -74,11 +76,31 @@ function Sidebar() {
           ))}
         </nav>
 
-        <div className="absolute bottom-6 left-4 right-4">
+        <div className="absolute bottom-6 left-4 right-4 space-y-3">
           <div className="bg-amber-900/20 border border-amber-900/40 rounded-xl p-4">
             <p className="text-xs text-amber-500 font-medium mb-1">✨ AI Powered</p>
             <p className="text-xs text-amber-600/60">Recomendações, sinopses e análises com I.A</p>
           </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              logout();
+              setOpen(false);
+              navigate('/login', { replace: true });
+            }}
+            className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-stone-950/40 border border-amber-900/30 text-amber-100 hover:bg-stone-950/60 transition"
+          >
+            <span className="flex flex-col items-start">
+              <span className="text-sm font-semibold">Sair</span>
+              {user?.email ? (
+                <span className="text-xs text-amber-200/50 truncate max-w-[200px]">{user.email}</span>
+              ) : (
+                <span className="text-xs text-amber-200/50">Encerrar sessão</span>
+              )}
+            </span>
+            <LogOut size={18} className="text-amber-200/70" />
+          </button>
         </div>
       </aside>
 

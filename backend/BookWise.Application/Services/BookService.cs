@@ -18,33 +18,34 @@ public class BookService : IBookService
         _logger = logger;
     }
 
-    public async Task<ApiResponse<IEnumerable<BookViewModel>>> GetAllAsync(CancellationToken ct = default)
+    public async Task<ApiResponse<IEnumerable<BookViewModel>>> GetAllAsync(int userId, CancellationToken ct = default)
     {
-        var books = await _unitOfWork.Books.GetAllWithDetailsAsync(ct);
+        var books = await _unitOfWork.Books.GetAllWithDetailsAsync(userId, ct);
         var viewModels = books.Select(MapToViewModel);
         return ApiResponse<IEnumerable<BookViewModel>>.Ok(viewModels);
     }
 
-    public async Task<ApiResponse<BookViewModel>> GetByIdAsync(int id, CancellationToken ct = default)
+    public async Task<ApiResponse<BookViewModel>> GetByIdAsync(int userId, int id, CancellationToken ct = default)
     {
-        var book = await _unitOfWork.Books.GetByIdWithDetailsAsync(id, ct);
+        var book = await _unitOfWork.Books.GetByIdWithDetailsAsync(userId, id, ct);
         if (book is null)
             return ApiResponse<BookViewModel>.Fail($"Book with ID {id} not found.");
 
         return ApiResponse<BookViewModel>.Ok(MapToViewModel(book));
     }
 
-    public async Task<ApiResponse<BookViewModel>> CreateAsync(CreateBookRequest request, CancellationToken ct = default)
+    public async Task<ApiResponse<BookViewModel>> CreateAsync(int userId, CreateBookRequest request, CancellationToken ct = default)
     {
-        var authorExists = await _unitOfWork.Authors.ExistsAsync(request.AuthorId, ct);
-        if (!authorExists)
+        var author = await _unitOfWork.Authors.GetByIdWithBooksAsync(userId, request.AuthorId, ct);
+        if (author is null)
             return ApiResponse<BookViewModel>.Fail($"Author with ID {request.AuthorId} not found.");
 
-        var genreExists = await _unitOfWork.Genres.ExistsAsync(request.GenreId, ct);
-        if (!genreExists)
+        var genre = await _unitOfWork.Genres.GetByIdWithBooksAsync(userId, request.GenreId, ct);
+        if (genre is null)
             return ApiResponse<BookViewModel>.Fail($"Genre with ID {request.GenreId} not found.");
 
         var book = new Book(
+            userId,
             request.Title,
             request.Description,
             request.PublicationYear,
@@ -57,25 +58,25 @@ public class BookService : IBookService
         await _unitOfWork.Books.AddAsync(book, ct);
         await _unitOfWork.CommitAsync(ct);
 
-        var created = await _unitOfWork.Books.GetByIdWithDetailsAsync(book.Id, ct);
+        var created = await _unitOfWork.Books.GetByIdWithDetailsAsync(userId, book.Id, ct);
         _logger.LogInformation("Book created: {BookId} - {Title}", book.Id, book.Title);
         return ApiResponse<BookViewModel>.Ok(MapToViewModel(created!), "Book created successfully.");
     }
 
-    public async Task<ApiResponse<BookViewModel>> ImportRemoteAsync(ImportRemoteBookRequest request, CancellationToken ct = default)
+    public async Task<ApiResponse<BookViewModel>> ImportRemoteAsync(int userId, ImportRemoteBookRequest request, CancellationToken ct = default)
     {
-        var genreExists = await _unitOfWork.Genres.ExistsAsync(request.GenreId, ct);
-        if (!genreExists)
+        var genre = await _unitOfWork.Genres.GetByIdWithBooksAsync(userId, request.GenreId, ct);
+        if (genre is null)
             return ApiResponse<BookViewModel>.Fail($"Genre with ID {request.GenreId} not found.");
 
         var authorName = request.AuthorName.Trim();
         if (authorName.Length < 2)
             return ApiResponse<BookViewModel>.Fail("AuthorName is required.");
 
-        var author = await _unitOfWork.Authors.GetByNameAsync(authorName, ct);
+        var author = await _unitOfWork.Authors.GetByNameAsync(userId, authorName, ct);
         if (author is null)
         {
-            author = new Author(authorName, null, null, null);
+            author = new Author(userId, authorName, null, null, null);
             await _unitOfWork.Authors.AddAsync(author, ct);
             await _unitOfWork.CommitAsync(ct);
         }
@@ -83,6 +84,7 @@ public class BookService : IBookService
         var publicationYear = request.PublicationYear ?? DateTime.UtcNow.Year;
 
         var book = new Book(
+            userId,
             request.Title,
             request.Description,
             publicationYear,
@@ -95,23 +97,23 @@ public class BookService : IBookService
         await _unitOfWork.Books.AddAsync(book, ct);
         await _unitOfWork.CommitAsync(ct);
 
-        var created = await _unitOfWork.Books.GetByIdWithDetailsAsync(book.Id, ct);
+        var created = await _unitOfWork.Books.GetByIdWithDetailsAsync(userId, book.Id, ct);
         _logger.LogInformation("Book imported: {BookId} - {Title} ({Source})", book.Id, book.Title, request.Source);
         return ApiResponse<BookViewModel>.Ok(MapToViewModel(created!), "Book imported successfully.");
     }
 
-    public async Task<ApiResponse<BookViewModel>> UpdateAsync(int id, UpdateBookRequest request, CancellationToken ct = default)
+    public async Task<ApiResponse<BookViewModel>> UpdateAsync(int userId, int id, UpdateBookRequest request, CancellationToken ct = default)
     {
-        var book = await _unitOfWork.Books.GetByIdWithDetailsAsync(id, ct);
+        var book = await _unitOfWork.Books.GetByIdWithDetailsAsync(userId, id, ct);
         if (book is null)
             return ApiResponse<BookViewModel>.Fail($"Book with ID {id} not found.");
 
-        var authorExists = await _unitOfWork.Authors.ExistsAsync(request.AuthorId, ct);
-        if (!authorExists)
+        var author = await _unitOfWork.Authors.GetByIdWithBooksAsync(userId, request.AuthorId, ct);
+        if (author is null)
             return ApiResponse<BookViewModel>.Fail($"Author with ID {request.AuthorId} not found.");
 
-        var genreExists = await _unitOfWork.Genres.ExistsAsync(request.GenreId, ct);
-        if (!genreExists)
+        var genre = await _unitOfWork.Genres.GetByIdWithBooksAsync(userId, request.GenreId, ct);
+        if (genre is null)
             return ApiResponse<BookViewModel>.Fail($"Genre with ID {request.GenreId} not found.");
 
         book.Update(request.Title, request.Description, request.PublicationYear, request.ISBN,
@@ -120,13 +122,13 @@ public class BookService : IBookService
         await _unitOfWork.Books.UpdateAsync(book, ct);
         await _unitOfWork.CommitAsync(ct);
 
-        var updated = await _unitOfWork.Books.GetByIdWithDetailsAsync(id, ct);
+        var updated = await _unitOfWork.Books.GetByIdWithDetailsAsync(userId, id, ct);
         return ApiResponse<BookViewModel>.Ok(MapToViewModel(updated!), "Book updated successfully.");
     }
 
-    public async Task<ApiResponse<bool>> DeleteAsync(int id, CancellationToken ct = default)
+    public async Task<ApiResponse<bool>> DeleteAsync(int userId, int id, CancellationToken ct = default)
     {
-        var book = await _unitOfWork.Books.GetByIdAsync(id, ct);
+        var book = await _unitOfWork.Books.GetByIdWithDetailsAsync(userId, id, ct);
         if (book is null)
             return ApiResponse<bool>.Fail($"Book with ID {id} not found.");
 
@@ -137,9 +139,9 @@ public class BookService : IBookService
         return ApiResponse<bool>.Ok(true, "Book deleted successfully.");
     }
 
-    public async Task<ApiResponse<IEnumerable<BookSummaryViewModel>>> SearchAsync(string term, CancellationToken ct = default)
+    public async Task<ApiResponse<IEnumerable<BookSummaryViewModel>>> SearchAsync(int userId, string term, CancellationToken ct = default)
     {
-        var books = await _unitOfWork.Books.SearchAsync(term, ct);
+        var books = await _unitOfWork.Books.SearchAsync(userId, term, ct);
         var viewModels = books.Select(b => new BookSummaryViewModel(
             b.Id, b.Title, b.CoverImageUrl, b.Author.Name, b.Genre.Name, b.PublicationYear));
         return ApiResponse<IEnumerable<BookSummaryViewModel>>.Ok(viewModels);

@@ -18,17 +18,17 @@ public class AuthorService : IAuthorService
         _logger = logger;
     }
 
-    public async Task<ApiResponse<IEnumerable<AuthorViewModel>>> GetAllAsync(CancellationToken ct = default)
+    public async Task<ApiResponse<IEnumerable<AuthorViewModel>>> GetAllAsync(int userId, CancellationToken ct = default)
     {
-        var authors = await _unitOfWork.Authors.GetAllWithBooksAsync(ct);
+        var authors = await _unitOfWork.Authors.GetAllWithBooksAsync(userId, ct);
         var viewModels = authors.Select(a => new AuthorViewModel(
             a.Id, a.Name, a.Biography, a.Nationality, a.BirthDate, a.Books.Count, a.CreatedAt));
         return ApiResponse<IEnumerable<AuthorViewModel>>.Ok(viewModels);
     }
 
-    public async Task<ApiResponse<AuthorWithBooksViewModel>> GetByIdAsync(int id, CancellationToken ct = default)
+    public async Task<ApiResponse<AuthorWithBooksViewModel>> GetByIdAsync(int userId, int id, CancellationToken ct = default)
     {
-        var author = await _unitOfWork.Authors.GetByIdWithBooksAsync(id, ct);
+        var author = await _unitOfWork.Authors.GetByIdWithBooksAsync(userId, id, ct);
         if (author is null)
             return ApiResponse<AuthorWithBooksViewModel>.Fail($"Author with ID {id} not found.");
 
@@ -39,13 +39,13 @@ public class AuthorService : IAuthorService
         return ApiResponse<AuthorWithBooksViewModel>.Ok(vm);
     }
 
-    public async Task<ApiResponse<AuthorViewModel>> CreateAsync(CreateAuthorRequest request, CancellationToken ct = default)
+    public async Task<ApiResponse<AuthorViewModel>> CreateAsync(int userId, CreateAuthorRequest request, CancellationToken ct = default)
     {
-        var nameExists = await _unitOfWork.Authors.ExistsByNameAsync(request.Name, ct);
+        var nameExists = await _unitOfWork.Authors.ExistsByNameAsync(userId, request.Name, ct);
         if (nameExists)
             return ApiResponse<AuthorViewModel>.Fail($"Author '{request.Name}' already exists.");
 
-        var author = new Author(request.Name, request.Biography, request.Nationality, NormalizeUtc(request.BirthDate));
+        var author = new Author(userId, request.Name, request.Biography, request.Nationality, NormalizeUtc(request.BirthDate));
         await _unitOfWork.Authors.AddAsync(author, ct);
         await _unitOfWork.CommitAsync(ct);
 
@@ -55,9 +55,9 @@ public class AuthorService : IAuthorService
             "Author created successfully.");
     }
 
-    public async Task<ApiResponse<AuthorViewModel>> UpdateAsync(int id, UpdateAuthorRequest request, CancellationToken ct = default)
+    public async Task<ApiResponse<AuthorViewModel>> UpdateAsync(int userId, int id, UpdateAuthorRequest request, CancellationToken ct = default)
     {
-        var author = await _unitOfWork.Authors.GetByIdWithBooksAsync(id, ct);
+        var author = await _unitOfWork.Authors.GetByIdWithBooksAsync(userId, id, ct);
         if (author is null)
             return ApiResponse<AuthorViewModel>.Fail($"Author with ID {id} not found.");
 
@@ -83,9 +83,9 @@ public class AuthorService : IAuthorService
         };
     }
 
-    public async Task<ApiResponse<bool>> DeleteAsync(int id, CancellationToken ct = default)
+    public async Task<ApiResponse<bool>> DeleteAsync(int userId, int id, CancellationToken ct = default)
     {
-        var author = await _unitOfWork.Authors.GetByIdWithBooksAsync(id, ct);
+        var author = await _unitOfWork.Authors.GetByIdWithBooksAsync(userId, id, ct);
         if (author is null)
             return ApiResponse<bool>.Fail($"Autor com ID {id} não encontrado.", errorCode: "not_found");
 
@@ -113,16 +113,16 @@ public class GenreService : IGenreService
         _logger = logger;
     }
 
-    public async Task<ApiResponse<IEnumerable<GenreViewModel>>> GetAllAsync(CancellationToken ct = default)
+    public async Task<ApiResponse<IEnumerable<GenreViewModel>>> GetAllAsync(int userId, CancellationToken ct = default)
     {
-        var genres = await _unitOfWork.Genres.GetAllWithBooksAsync(ct);
+        var genres = await _unitOfWork.Genres.GetAllWithBooksAsync(userId, ct);
         var viewModels = genres.Select(g => new GenreViewModel(g.Id, g.Name, g.Description, g.Books.Count, g.CreatedAt));
         return ApiResponse<IEnumerable<GenreViewModel>>.Ok(viewModels);
     }
 
-    public async Task<ApiResponse<GenreWithBooksViewModel>> GetByIdAsync(int id, CancellationToken ct = default)
+    public async Task<ApiResponse<GenreWithBooksViewModel>> GetByIdAsync(int userId, int id, CancellationToken ct = default)
     {
-        var genre = await _unitOfWork.Genres.GetByIdWithBooksAsync(id, ct);
+        var genre = await _unitOfWork.Genres.GetByIdWithBooksAsync(userId, id, ct);
         if (genre is null)
             return ApiResponse<GenreWithBooksViewModel>.Fail($"Genre with ID {id} not found.");
 
@@ -133,13 +133,13 @@ public class GenreService : IGenreService
         return ApiResponse<GenreWithBooksViewModel>.Ok(vm);
     }
 
-    public async Task<ApiResponse<GenreViewModel>> CreateAsync(CreateGenreRequest request, CancellationToken ct = default)
+    public async Task<ApiResponse<GenreViewModel>> CreateAsync(int userId, CreateGenreRequest request, CancellationToken ct = default)
     {
-        var nameExists = await _unitOfWork.Genres.ExistsByNameAsync(request.Name, ct);
+        var nameExists = await _unitOfWork.Genres.ExistsByNameAsync(userId, request.Name, ct);
         if (nameExists)
             return ApiResponse<GenreViewModel>.Fail($"Genre '{request.Name}' already exists.");
 
-        var genre = new Genre(request.Name, request.Description);
+        var genre = new Genre(userId, request.Name, request.Description);
         await _unitOfWork.Genres.AddAsync(genre, ct);
         await _unitOfWork.CommitAsync(ct);
 
@@ -149,9 +149,9 @@ public class GenreService : IGenreService
             "Genre created successfully.");
     }
 
-    public async Task<ApiResponse<GenreViewModel>> UpdateAsync(int id, UpdateGenreRequest request, CancellationToken ct = default)
+    public async Task<ApiResponse<GenreViewModel>> UpdateAsync(int userId, int id, UpdateGenreRequest request, CancellationToken ct = default)
     {
-        var genre = await _unitOfWork.Genres.GetByIdWithBooksAsync(id, ct);
+        var genre = await _unitOfWork.Genres.GetByIdWithBooksAsync(userId, id, ct);
         if (genre is null)
             return ApiResponse<GenreViewModel>.Fail($"Genre with ID {id} not found.");
 
@@ -164,9 +164,9 @@ public class GenreService : IGenreService
             "Genre updated successfully.");
     }
 
-    public async Task<ApiResponse<bool>> DeleteAsync(int id, CancellationToken ct = default)
+    public async Task<ApiResponse<bool>> DeleteAsync(int userId, int id, CancellationToken ct = default)
     {
-        var genre = await _unitOfWork.Genres.GetByIdWithBooksAsync(id, ct);
+        var genre = await _unitOfWork.Genres.GetByIdWithBooksAsync(userId, id, ct);
         if (genre is null)
             return ApiResponse<bool>.Fail($"Gênero com ID {id} não encontrado.", errorCode: "not_found");
 
