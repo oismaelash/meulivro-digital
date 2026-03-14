@@ -18,6 +18,11 @@ public partial class UserScopedCatalog : Migration
             OVERRIDING SYSTEM VALUE
             VALUES (1, 'system@local', 'System', NULL, NULL, NULL, NOW(), NULL, TRUE)
             ON CONFLICT (id) DO NOTHING;
+
+            SELECT setval(
+                pg_get_serial_sequence('users', 'id'),
+                (SELECT COALESCE(MAX(id), 1) FROM users)
+            );
             """);
 
         migrationBuilder.AddColumn<int>(
@@ -153,4 +158,3 @@ public partial class UserScopedCatalog : Migration
         migrationBuilder.Sql("DELETE FROM users WHERE id = 1 AND email = 'system@local';");
     }
 }
-
