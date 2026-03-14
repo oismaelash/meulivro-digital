@@ -323,6 +323,11 @@ public class AuthService : IAuthService
 
             user = UserAccount.CreateFromGoogle(sub, email, name);
             await _uow.Users.AddAsync(user, ct);
+            user.MarkLogin();
+            await _uow.CommitAsync(ct);
+            await EnsureDefaultGenresAsync(user.Id, ct);
+            await _uow.CommitAsync(ct);
+            return ApiResponse<AuthTokenResponse>.Ok(IssueToken(user));
         }
         else
         {

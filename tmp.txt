@@ -1,0 +1,512 @@
+2026-03-13 21:58:54.002 | info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+2026-03-13 21:58:54.002 |       Request starting HTTP/1.1 GET http://localhost:5000/api/v1/auth/callback/google?state=da9c4d5079834c73b30601381d24bd2e&iss=https%3A%2F%2Faccounts.google.com&code=4%2F0AfrIepCyKJS1WggkdHPtmlKrMZHUd3NpP_OOB-vWTz-vUgjSA92AT1WWBLsxV5swoL-pOQ&scope=email+profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+openid+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&authuser=0&hd=ismaelnascimento.com&prompt=none - - -
+2026-03-13 21:58:54.002 | info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+2026-03-13 21:58:54.003 |       Executing endpoint 'BookWise.API.Controllers.v1.AuthController.GoogleCallback (BookWise.API)'
+2026-03-13 21:58:54.003 | info: Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker[102]
+2026-03-13 21:58:54.003 |       Route matched with {action = "GoogleCallback", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GoogleCallback(System.String, System.String, System.String, System.Threading.CancellationToken) on controller BookWise.API.Controllers.v1.AuthController (BookWise.API).
+2026-03-13 21:58:54.007 | dbug: Microsoft.EntityFrameworkCore.Infrastructure[10403]
+2026-03-13 21:58:54.007 |       Entity Framework Core 8.0.0 initialized 'BookWiseDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:8.0.0+2539d1f4bd0d429cbae20336d531d14938a54297' with options: MigrationsAssembly=BookWise.Infrastructure 
+2026-03-13 21:58:54.010 | info: System.Net.Http.HttpClient.Default.LogicalHandler[100]
+2026-03-13 21:58:54.010 |       Start processing HTTP request POST https://oauth2.googleapis.com/token
+2026-03-13 21:58:54.010 | info: System.Net.Http.HttpClient.Default.ClientHandler[100]
+2026-03-13 21:58:54.010 |       Sending HTTP request POST https://oauth2.googleapis.com/token
+2026-03-13 21:58:54.172 | info: System.Net.Http.HttpClient.Default.ClientHandler[101]
+2026-03-13 21:58:54.172 |       Received HTTP response headers after 161.6747ms - 200
+2026-03-13 21:58:54.172 | info: System.Net.Http.HttpClient.Default.LogicalHandler[101]
+2026-03-13 21:58:54.172 |       End processing HTTP request after 161.8878ms - 200
+2026-03-13 21:58:54.176 | info: System.Net.Http.HttpClient.Default.LogicalHandler[100]
+2026-03-13 21:58:54.177 |       Start processing HTTP request GET https://openidconnect.googleapis.com/v1/userinfo
+2026-03-13 21:58:54.177 | info: System.Net.Http.HttpClient.Default.ClientHandler[100]
+2026-03-13 21:58:54.177 |       Sending HTTP request GET https://openidconnect.googleapis.com/v1/userinfo
+2026-03-13 21:58:54.587 | info: System.Net.Http.HttpClient.Default.ClientHandler[101]
+2026-03-13 21:58:54.587 |       Received HTTP response headers after 410.2173ms - 200
+2026-03-13 21:58:54.587 | info: System.Net.Http.HttpClient.Default.LogicalHandler[101]
+2026-03-13 21:58:54.587 |       End processing HTTP request after 410.4028ms - 200
+2026-03-13 21:58:54.590 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20005]
+2026-03-13 21:58:54.590 |       Creating DbConnection.
+2026-03-13 21:58:54.590 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20006]
+2026-03-13 21:58:54.590 |       Created DbConnection. (0ms).
+2026-03-13 21:58:54.590 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20000]
+2026-03-13 21:58:54.590 |       Opening connection to database 'bookwise' on server 'tcp://postgres:45432'.
+2026-03-13 21:58:54.590 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20001]
+2026-03-13 21:58:54.590 |       Opened connection to database 'bookwise' on server 'tcp://postgres:45432'.
+2026-03-13 21:58:54.591 | info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+2026-03-13 21:58:54.591 |       Executed DbCommand (1ms) [Parameters=[@__googleSubject_0='?'], CommandType='Text', CommandTimeout='30']
+2026-03-13 21:58:54.591 |       SELECT u.id, u.created_at, u.email, u.google_subject, u.is_active, u.last_login_at, u.name, u.phone_number_e164, u.updated_at
+2026-03-13 21:58:54.591 |       FROM users AS u
+2026-03-13 21:58:54.591 |       WHERE u.is_active AND u.google_subject = @__googleSubject_0
+2026-03-13 21:58:54.591 |       LIMIT 1
+2026-03-13 21:58:54.591 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20002]
+2026-03-13 21:58:54.591 |       Closing connection to database 'bookwise' on server 'tcp://postgres:45432'.
+2026-03-13 21:58:54.591 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20003]
+2026-03-13 21:58:54.591 |       Closed connection to database 'bookwise' on server 'tcp://postgres:45432' (0ms).
+2026-03-13 21:58:54.592 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20000]
+2026-03-13 21:58:54.592 |       Opening connection to database 'bookwise' on server 'tcp://postgres:45432'.
+2026-03-13 21:58:54.592 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20001]
+2026-03-13 21:58:54.592 |       Opened connection to database 'bookwise' on server 'tcp://postgres:45432'.
+2026-03-13 21:58:54.593 | info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+2026-03-13 21:58:54.593 |       Executed DbCommand (1ms) [Parameters=[@__normalized_0='?'], CommandType='Text', CommandTimeout='30']
+2026-03-13 21:58:54.593 |       SELECT u.id, u.created_at, u.email, u.google_subject, u.is_active, u.last_login_at, u.name, u.phone_number_e164, u.updated_at
+2026-03-13 21:58:54.593 |       FROM users AS u
+2026-03-13 21:58:54.593 |       WHERE u.is_active AND u.email IS NOT NULL AND lower(u.email) = @__normalized_0
+2026-03-13 21:58:54.593 |       LIMIT 1
+2026-03-13 21:58:54.593 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20002]
+2026-03-13 21:58:54.593 |       Closing connection to database 'bookwise' on server 'tcp://postgres:45432'.
+2026-03-13 21:58:54.593 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20003]
+2026-03-13 21:58:54.593 |       Closed connection to database 'bookwise' on server 'tcp://postgres:45432' (0ms).
+2026-03-13 21:58:54.593 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.593 |       'BookWiseDbContext' generated a temporary value for the property 'UserAccount.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.593 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.593 |       Context 'BookWiseDbContext' started tracking 'UserAccount' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.594 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20000]
+2026-03-13 21:58:54.594 |       Opening connection to database 'bookwise' on server 'tcp://postgres:45432'.
+2026-03-13 21:58:54.594 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20001]
+2026-03-13 21:58:54.594 |       Opened connection to database 'bookwise' on server 'tcp://postgres:45432'.
+2026-03-13 21:58:54.594 | info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+2026-03-13 21:58:54.594 |       Executed DbCommand (1ms) [Parameters=[@__userId_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+2026-03-13 21:58:54.594 |       SELECT EXISTS (
+2026-03-13 21:58:54.594 |           SELECT 1
+2026-03-13 21:58:54.594 |           FROM genres AS g
+2026-03-13 21:58:54.594 |           WHERE g.is_active AND g.user_account_id = @__userId_0)
+2026-03-13 21:58:54.595 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20002]
+2026-03-13 21:58:54.595 |       Closing connection to database 'bookwise' on server 'tcp://postgres:45432'.
+2026-03-13 21:58:54.595 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20003]
+2026-03-13 21:58:54.595 |       Closed connection to database 'bookwise' on server 'tcp://postgres:45432' (0ms).
+2026-03-13 21:58:54.595 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.595 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.595 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.595 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.595 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.595 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.595 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.595 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.595 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.595 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.595 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.595 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.595 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.596 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.596 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.596 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.596 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.596 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.596 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.596 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.596 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.596 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.596 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.596 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.596 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.596 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.596 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.596 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.596 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.596 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.596 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.596 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.596 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.596 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.596 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.596 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.596 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.596 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.596 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.596 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.596 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.596 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.596 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.596 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.596 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.596 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.596 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.596 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.597 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.597 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.597 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.597 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.597 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.597 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.597 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.597 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.597 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.597 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.597 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.597 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.597 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.597 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.597 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.597 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.597 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.597 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.597 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.598 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.598 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.598 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.598 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.598 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.598 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.598 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.598 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.598 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.598 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.598 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.598 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.598 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.598 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.598 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.598 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.598 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.598 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.598 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.598 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.598 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.598 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.598 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.598 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.598 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.598 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.598 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.598 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.598 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.598 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.598 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.599 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.599 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.599 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.599 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.599 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.599 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.599 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.599 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.599 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.599 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.599 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.599 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.599 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.599 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.599 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.599 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.599 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.599 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.599 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.599 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.599 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.599 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.599 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.599 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.599 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.599 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.599 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.599 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.599 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10808]
+2026-03-13 21:58:54.599 |       'BookWiseDbContext' generated a temporary value for the property 'Genre.Id'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.599 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10806]
+2026-03-13 21:58:54.599 |       Context 'BookWiseDbContext' started tracking 'Genre' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2026-03-13 21:58:54.599 | dbug: Microsoft.EntityFrameworkCore.Update[10004]
+2026-03-13 21:58:54.599 |       SaveChanges starting for 'BookWiseDbContext'.
+2026-03-13 21:58:54.599 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10800]
+2026-03-13 21:58:54.599 |       DetectChanges starting for 'BookWiseDbContext'.
+2026-03-13 21:58:54.600 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10802]
+2026-03-13 21:58:54.600 |       The unchanged property 'UserAccount.LastLoginAt' was detected as changed and will be marked as modified. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see property values.
+2026-03-13 21:58:54.600 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10802]
+2026-03-13 21:58:54.600 |       The unchanged property 'UserAccount.UpdatedAt' was detected as changed and will be marked as modified. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see property values.
+2026-03-13 21:58:54.600 | dbug: Microsoft.EntityFrameworkCore.ChangeTracking[10801]
+2026-03-13 21:58:54.600 |       DetectChanges completed for 'BookWiseDbContext'.
+2026-03-13 21:58:54.602 | dbug: Microsoft.EntityFrameworkCore.Update[20700]
+2026-03-13 21:58:54.602 |       Executing 38 update commands as a batch.
+2026-03-13 21:58:54.603 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20000]
+2026-03-13 21:58:54.603 |       Opening connection to database 'bookwise' on server 'tcp://postgres:45432'.
+2026-03-13 21:58:54.603 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20001]
+2026-03-13 21:58:54.603 |       Opened connection to database 'bookwise' on server 'tcp://postgres:45432'.
+2026-03-13 21:58:54.603 | dbug: Microsoft.EntityFrameworkCore.Database.Transaction[20209]
+2026-03-13 21:58:54.603 |       Beginning transaction with isolation level 'Unspecified'.
+2026-03-13 21:58:54.603 | dbug: Microsoft.EntityFrameworkCore.Database.Transaction[20200]
+2026-03-13 21:58:54.603 |       Began transaction with isolation level 'ReadCommitted'.
+2026-03-13 21:58:54.613 | fail: Microsoft.EntityFrameworkCore.Database.Command[20102]
+2026-03-13 21:58:54.613 |       Failed executing DbCommand (9ms) [Parameters=[@p0='?' (DbType = DateTime), @p1='?', @p2='?', @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32), @p5='?' (DbType = DateTime), @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?' (DbType = Int32), @p10='?' (DbType = DateTime), @p11='?', @p12='?', @p13='?' (DbType = DateTime), @p14='?' (DbType = Int32), @p15='?' (DbType = DateTime), @p16='?', @p17='?', @p18='?' (DbType = DateTime), @p19='?' (DbType = Int32), @p20='?' (DbType = DateTime), @p21='?', @p22='?', @p23='?' (DbType = DateTime), @p24='?' (DbType = Int32), @p25='?' (DbType = DateTime), @p26='?', @p27='?', @p28='?' (DbType = DateTime), @p29='?' (DbType = Int32), @p30='?' (DbType = DateTime), @p31='?', @p32='?', @p33='?' (DbType = DateTime), @p34='?' (DbType = Int32), @p35='?' (DbType = DateTime), @p36='?', @p37='?', @p38='?' (DbType = DateTime), @p39='?' (DbType = Int32), @p40='?' (DbType = DateTime), @p41='?', @p42='?', @p43='?' (DbType = DateTime), @p44='?' (DbType = Int32), @p45='?' (DbType = DateTime), @p46='?', @p47='?', @p48='?' (DbType = DateTime), @p49='?' (DbType = Int32), @p50='?' (DbType = DateTime), @p51='?', @p52='?', @p53='?' (DbType = DateTime), @p54='?' (DbType = Int32), @p55='?' (DbType = DateTime), @p56='?', @p57='?', @p58='?' (DbType = DateTime), @p59='?' (DbType = Int32), @p60='?' (DbType = DateTime), @p61='?', @p62='?', @p63='?' (DbType = DateTime), @p64='?' (DbType = Int32), @p65='?' (DbType = DateTime), @p66='?', @p67='?', @p68='?' (DbType = DateTime), @p69='?' (DbType = Int32), @p70='?' (DbType = DateTime), @p71='?', @p72='?', @p73='?' (DbType = DateTime), @p74='?' (DbType = Int32), @p75='?' (DbType = DateTime), @p76='?', @p77='?', @p78='?' (DbType = DateTime), @p79='?' (DbType = Int32), @p80='?' (DbType = DateTime), @p81='?', @p82='?', @p83='?' (DbType = DateTime), @p84='?' (DbType = Int32), @p85='?' (DbType = DateTime), @p86='?', @p87='?', @p88='?' (DbType = DateTime), @p89='?' (DbType = Int32), @p90='?' (DbType = DateTime), @p91='?', @p92='?', @p93='?' (DbType = DateTime), @p94='?' (DbType = Int32), @p95='?' (DbType = DateTime), @p96='?', @p97='?', @p98='?' (DbType = DateTime), @p99='?' (DbType = Int32), @p100='?' (DbType = DateTime), @p101='?', @p102='?', @p103='?' (DbType = DateTime), @p104='?' (DbType = Int32), @p105='?' (DbType = DateTime), @p106='?', @p107='?', @p108='?' (DbType = DateTime), @p109='?' (DbType = Int32), @p110='?' (DbType = DateTime), @p111='?', @p112='?', @p113='?' (DbType = DateTime), @p114='?' (DbType = Int32), @p115='?' (DbType = DateTime), @p116='?', @p117='?', @p118='?' (DbType = DateTime), @p119='?' (DbType = Int32), @p120='?' (DbType = DateTime), @p121='?', @p122='?', @p123='?' (DbType = DateTime), @p124='?' (DbType = Int32), @p125='?' (DbType = DateTime), @p126='?', @p127='?', @p128='?' (DbType = DateTime), @p129='?' (DbType = Int32), @p130='?' (DbType = DateTime), @p131='?', @p132='?', @p133='?' (DbType = DateTime), @p134='?' (DbType = Int32), @p135='?' (DbType = DateTime), @p136='?', @p137='?', @p138='?' (DbType = DateTime), @p139='?' (DbType = Int32), @p140='?' (DbType = DateTime), @p141='?', @p142='?', @p143='?' (DbType = DateTime), @p144='?' (DbType = Int32), @p145='?' (DbType = DateTime), @p146='?', @p147='?', @p148='?' (DbType = DateTime), @p149='?' (DbType = Int32), @p150='?' (DbType = DateTime), @p151='?', @p152='?', @p153='?' (DbType = DateTime), @p154='?' (DbType = Int32), @p155='?' (DbType = DateTime), @p156='?', @p157='?', @p158='?' (DbType = DateTime), @p159='?' (DbType = Int32), @p160='?' (DbType = DateTime), @p161='?', @p162='?', @p163='?' (DbType = DateTime), @p164='?' (DbType = Int32), @p165='?' (DbType = DateTime), @p166='?', @p167='?', @p168='?' (DbType = DateTime), @p169='?' (DbType = Int32), @p170='?' (DbType = DateTime), @p171='?', @p172='?', @p173='?' (DbType = DateTime), @p174='?' (DbType = Int32), @p175='?' (DbType = DateTime), @p176='?', @p177='?', @p178='?' (DbType = DateTime), @p179='?' (DbType = Int32), @p180='?' (DbType = DateTime), @p181='?', @p182='?', @p183='?' (DbType = DateTime), @p184='?' (DbType = Int32), @p185='?' (DbType = DateTime), @p186='?', @p187='?', @p188='?' (DbType = DateTime), @p189='?', @p190='?', @p191='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p0, @p1, @p2, @p3, @p4)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p5, @p6, @p7, @p8, @p9)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p10, @p11, @p12, @p13, @p14)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p15, @p16, @p17, @p18, @p19)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p20, @p21, @p22, @p23, @p24)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p25, @p26, @p27, @p28, @p29)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p30, @p31, @p32, @p33, @p34)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p35, @p36, @p37, @p38, @p39)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p40, @p41, @p42, @p43, @p44)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p45, @p46, @p47, @p48, @p49)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p50, @p51, @p52, @p53, @p54)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p55, @p56, @p57, @p58, @p59)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p60, @p61, @p62, @p63, @p64)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p65, @p66, @p67, @p68, @p69)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p70, @p71, @p72, @p73, @p74)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p75, @p76, @p77, @p78, @p79)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p80, @p81, @p82, @p83, @p84)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p85, @p86, @p87, @p88, @p89)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p90, @p91, @p92, @p93, @p94)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p95, @p96, @p97, @p98, @p99)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p100, @p101, @p102, @p103, @p104)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p105, @p106, @p107, @p108, @p109)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p110, @p111, @p112, @p113, @p114)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p115, @p116, @p117, @p118, @p119)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p120, @p121, @p122, @p123, @p124)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p125, @p126, @p127, @p128, @p129)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p130, @p131, @p132, @p133, @p134)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p135, @p136, @p137, @p138, @p139)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p140, @p141, @p142, @p143, @p144)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p145, @p146, @p147, @p148, @p149)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p150, @p151, @p152, @p153, @p154)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p155, @p156, @p157, @p158, @p159)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p160, @p161, @p162, @p163, @p164)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p165, @p166, @p167, @p168, @p169)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p170, @p171, @p172, @p173, @p174)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p175, @p176, @p177, @p178, @p179)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO genres (created_at, description, name, updated_at, user_account_id)
+2026-03-13 21:58:54.613 |       VALUES (@p180, @p181, @p182, @p183, @p184)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.613 |       INSERT INTO users (created_at, email, google_subject, last_login_at, name, phone_number_e164, updated_at)
+2026-03-13 21:58:54.613 |       VALUES (@p185, @p186, @p187, @p188, @p189, @p190, @p191)
+2026-03-13 21:58:54.613 |       RETURNING id, is_active;
+2026-03-13 21:58:54.614 | dbug: Microsoft.EntityFrameworkCore.Database.Transaction[20204]
+2026-03-13 21:58:54.614 |       Disposing transaction.
+2026-03-13 21:58:54.614 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20002]
+2026-03-13 21:58:54.614 |       Closing connection to database 'bookwise' on server 'tcp://postgres:45432'.
+2026-03-13 21:58:54.614 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20003]
+2026-03-13 21:58:54.614 |       Closed connection to database 'bookwise' on server 'tcp://postgres:45432' (0ms).
+2026-03-13 21:58:54.616 | fail: Microsoft.EntityFrameworkCore.Update[10000]
+2026-03-13 21:58:54.616 |       An exception occurred in the database while saving changes for context type 'BookWise.Infrastructure.Data.Context.BookWiseDbContext'.
+2026-03-13 21:58:54.616 |       Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+2026-03-13 21:58:54.616 |        ---> Npgsql.PostgresException (0x80004005): 23503: insert or update on table "genres" violates foreign key constraint "FK_genres_users_user_account_id"
+2026-03-13 21:58:54.616 |       
+2026-03-13 21:58:54.616 |       DETAIL: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+2026-03-13 21:58:54.616 |          at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+2026-03-13 21:58:54.616 |          at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+2026-03-13 21:58:54.616 |          at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |         Exception data:
+2026-03-13 21:58:54.616 |           Severity: ERROR
+2026-03-13 21:58:54.616 |           SqlState: 23503
+2026-03-13 21:58:54.616 |           MessageText: insert or update on table "genres" violates foreign key constraint "FK_genres_users_user_account_id"
+2026-03-13 21:58:54.616 |           Detail: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+2026-03-13 21:58:54.616 |           SchemaName: public
+2026-03-13 21:58:54.616 |           TableName: genres
+2026-03-13 21:58:54.616 |           ConstraintName: FK_genres_users_user_account_id
+2026-03-13 21:58:54.616 |           File: ri_triggers.c
+2026-03-13 21:58:54.616 |           Line: 2608
+2026-03-13 21:58:54.616 |           Routine: ri_ReportViolation
+2026-03-13 21:58:54.616 |          --- End of inner exception stack trace ---
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |       Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+2026-03-13 21:58:54.616 |        ---> Npgsql.PostgresException (0x80004005): 23503: insert or update on table "genres" violates foreign key constraint "FK_genres_users_user_account_id"
+2026-03-13 21:58:54.616 |       
+2026-03-13 21:58:54.616 |       DETAIL: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+2026-03-13 21:58:54.616 |          at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+2026-03-13 21:58:54.616 |          at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+2026-03-13 21:58:54.616 |          at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |         Exception data:
+2026-03-13 21:58:54.616 |           Severity: ERROR
+2026-03-13 21:58:54.616 |           SqlState: 23503
+2026-03-13 21:58:54.616 |           MessageText: insert or update on table "genres" violates foreign key constraint "FK_genres_users_user_account_id"
+2026-03-13 21:58:54.616 |           Detail: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+2026-03-13 21:58:54.616 |           SchemaName: public
+2026-03-13 21:58:54.616 |           TableName: genres
+2026-03-13 21:58:54.616 |           ConstraintName: FK_genres_users_user_account_id
+2026-03-13 21:58:54.616 |           File: ri_triggers.c
+2026-03-13 21:58:54.616 |           Line: 2608
+2026-03-13 21:58:54.616 |           Routine: ri_ReportViolation
+2026-03-13 21:58:54.616 |          --- End of inner exception stack trace ---
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+2026-03-13 21:58:54.616 |          at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2026-03-13 21:58:54.617 | info: Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker[105]
+2026-03-13 21:58:54.617 |       Executed action BookWise.API.Controllers.v1.AuthController.GoogleCallback (BookWise.API) in 614.1375ms
+2026-03-13 21:58:54.617 | info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+2026-03-13 21:58:54.617 |       Executed endpoint 'BookWise.API.Controllers.v1.AuthController.GoogleCallback (BookWise.API)'
+2026-03-13 21:58:54.620 | fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+2026-03-13 21:58:54.620 |       An unhandled exception has occurred while executing the request.
+2026-03-13 21:58:54.620 |       Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+2026-03-13 21:58:54.620 |        ---> Npgsql.PostgresException (0x80004005): 23503: insert or update on table "genres" violates foreign key constraint "FK_genres_users_user_account_id"
+2026-03-13 21:58:54.620 |       
+2026-03-13 21:58:54.620 |       DETAIL: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+2026-03-13 21:58:54.620 |          at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+2026-03-13 21:58:54.620 |          at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+2026-03-13 21:58:54.620 |          at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+2026-03-13 21:58:54.620 |          at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+2026-03-13 21:58:54.620 |          at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+2026-03-13 21:58:54.620 |          at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+2026-03-13 21:58:54.620 |          at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+2026-03-13 21:58:54.620 |          at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+2026-03-13 21:58:54.620 |          at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+2026-03-13 21:58:54.620 |          at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+2026-03-13 21:58:54.620 |         Exception data:
+2026-03-13 21:58:54.620 |           Severity: ERROR
+2026-03-13 21:58:54.620 |           SqlState: 23503
+2026-03-13 21:58:54.620 |           MessageText: insert or update on table "genres" violates foreign key constraint "FK_genres_users_user_account_id"
+2026-03-13 21:58:54.620 |           Detail: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+2026-03-13 21:58:54.620 |           SchemaName: public
+2026-03-13 21:58:54.620 |           TableName: genres
+2026-03-13 21:58:54.620 |           ConstraintName: FK_genres_users_user_account_id
+2026-03-13 21:58:54.620 |           File: ri_triggers.c
+2026-03-13 21:58:54.620 |           Line: 2608
+2026-03-13 21:58:54.620 |           Routine: ri_ReportViolation
+2026-03-13 21:58:54.620 |          --- End of inner exception stack trace ---
+2026-03-13 21:58:54.620 |          at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+2026-03-13 21:58:54.620 |          at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+2026-03-13 21:58:54.620 |          at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+2026-03-13 21:58:54.620 |          at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+2026-03-13 21:58:54.620 |          at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+2026-03-13 21:58:54.620 |          at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2026-03-13 21:58:54.620 |          at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+2026-03-13 21:58:54.620 |          at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2026-03-13 21:58:54.620 |          at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2026-03-13 21:58:54.620 |          at BookWise.Infrastructure.Repositories.UnitOfWork.CommitAsync(CancellationToken ct) in /src/BookWise.Infrastructure/Repositories/Repositories.cs:line 189
+2026-03-13 21:58:54.620 |          at BookWise.API.Services.AuthService.UpsertGoogleUserAndIssueTokenAsync(String sub, String email, String name, CancellationToken ct) in /src/BookWise.API/Services/AuthService.cs:line 334
+2026-03-13 21:58:54.620 |          at BookWise.API.Services.AuthService.LoginWithGoogleCodeAsync(String code, String redirectUri, CancellationToken ct) in /src/BookWise.API/Services/AuthService.cs:line 290
+2026-03-13 21:58:54.620 |          at BookWise.API.Controllers.v1.AuthController.GoogleCallback(String code, String state, String error, CancellationToken ct) in /src/BookWise.API/Controllers/v1/AuthController.cs:line 95
+2026-03-13 21:58:54.620 |          at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+2026-03-13 21:58:54.620 |          at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+2026-03-13 21:58:54.620 |          at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+2026-03-13 21:58:54.620 |          at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+2026-03-13 21:58:54.620 |          at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+2026-03-13 21:58:54.620 |          at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+2026-03-13 21:58:54.620 |          at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+2026-03-13 21:58:54.620 |          at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+2026-03-13 21:58:54.620 |          at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+2026-03-13 21:58:54.620 |          at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+2026-03-13 21:58:54.620 |          at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+2026-03-13 21:58:54.620 |          at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+2026-03-13 21:58:54.620 |          at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+2026-03-13 21:58:54.620 |          at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+2026-03-13 21:58:54.620 |          at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2026-03-13 21:58:54.627 | dbug: Microsoft.EntityFrameworkCore.Infrastructure[10407]
+2026-03-13 21:58:54.627 |       'BookWiseDbContext' disposed.
+2026-03-13 21:58:54.627 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20007]
+2026-03-13 21:58:54.627 |       Disposing connection to database 'bookwise' on server 'tcp://postgres:45432'.
+2026-03-13 21:58:54.627 | dbug: Microsoft.EntityFrameworkCore.Database.Connection[20008]
+2026-03-13 21:58:54.627 |       Disposed connection to database 'bookwise' on server 'tcp://postgres:45432' (0ms).
+2026-03-13 21:58:54.627 | info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+2026-03-13 21:58:54.627 |       Request finished HTTP/1.1 GET http://localhost:5000/api/v1/auth/callback/google?state=da9c4d5079834c73b30601381d24bd2e&iss=https%3A%2F%2Faccounts.google.com&code=4%2F0AfrIepCyKJS1WggkdHPtmlKrMZHUd3NpP_OOB-vWTz-vUgjSA92AT1WWBLsxV5swoL-pOQ&scope=email+profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+openid+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&authuser=0&hd=ismaelnascimento.com&prompt=none - 500 - text/html;+charset=utf-8 625.5343ms
+2026-03-13 21:58:54.670 | info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+2026-03-13 21:58:54.670 |       Request starting HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - - -
+2026-03-13 21:58:54.670 | info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+2026-03-13 21:58:54.670 |       Request finished HTTP/1.1 GET http://localhost:5000/_framework/aspnetcore-browser-refresh.js - 200 13710 application/javascript;+charset=utf-8 0.4131ms
+2026-03-13 21:58:54.693 | info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+2026-03-13 21:58:54.693 |       Request starting HTTP/1.1 GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json - - -
+2026-03-13 21:58:54.693 | info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+2026-03-13 21:58:54.693 |       Request finished HTTP/1.1 GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json - 404 0 - 0.5910ms
+2026-03-13 21:58:54.693 | info: Microsoft.AspNetCore.Hosting.Diagnostics[16]
+2026-03-13 21:58:54.693 |       Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json, Response status code: 404
